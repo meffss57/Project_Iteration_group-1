@@ -23,7 +23,7 @@ public class MyApplication {
         System.out.println("3. Create user");
         System.out.println("0. Exit");
         System.out.println();
-        System.out.print("Enter option (1-3): ");
+        System.out.print("Enter option (1-3):  ");
     }
 
     public void start() {
