@@ -29,6 +29,7 @@ public class MyApplication {
     public void start() {
         while (true) {
             mainMenu();
+
             try {
                 int option = scanner.nextInt();
 
