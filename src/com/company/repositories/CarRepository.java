@@ -9,13 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CarRepository implements ICarRepository {
-    private final IDB db;  // Dependency Injection
+    private final IDB db;
 
     public CarRepository(IDB db) {
         this.db = db;
     }
 
-    /// changed createUser to -> createCar
     @Override
     public boolean createCar(Car car) {
         String sql = "INSERT INTO cars(vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status) " +
@@ -39,57 +38,56 @@ public class CarRepository implements ICarRepository {
             return st.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.out.println("sql error: " + e.getMessage());
+            System.out.println("SQL error: " + e.getMessage());
         }
 
         return false;
     }
 
-    /// changed getUser to -> getCar
     @Override
-    public Car getCar(int id) {
-        Connection con = null;
+    public Car getCar(int carId) {
+        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status " +
+                "FROM cars WHERE car_id=?";
 
-        try {
-            con = db.getConnection();
-            String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status FROM cars WHERE car_id=?";
-            PreparedStatement st = con.prepareStatement(sql);
+        try (Connection con = db.getConnection();
+             PreparedStatement st = con.prepareStatement(sql)) {
 
-            st.setInt(1, id);
+            st.setInt(1, carId);
 
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                return new Car(
-                        rs.getInt("car_id"),
-                        rs.getString("vin"),
-                        rs.getString("brand"),
-                        rs.getString("model"),
-                        rs.getString("branch_city"),
-                        rs.getInt("year"),
-                        rs.getString("color"),
-                        rs.getString("engine_type"),
-                        rs.getDouble("engine_volume"),
-                        rs.getInt("mileage"),
-                        rs.getDouble("sale_price"),
-                        rs.getString("status"));
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return new Car(
+                            rs.getInt("car_id"),
+                            rs.getString("vin"),
+                            rs.getString("brand"),
+                            rs.getString("model"),
+                            rs.getString("branch_city"),
+                            rs.getInt("year"),
+                            rs.getString("color"),
+                            rs.getString("engine_type"),
+                            rs.getDouble("engine_volume"),
+                            rs.getInt("mileage"),
+                            rs.getDouble("sale_price"),
+                            rs.getString("status")
+                    );
+                }
             }
+
         } catch (SQLException e) {
-            System.out.println("sql error: " + e.getMessage());
+            System.out.println("SQL error: " + e.getMessage());
         }
 
         return null;
     }
 
-    /// changed getAllUser to -> getAllCars
     @Override
     public List<Car> getAllCars() {
         List<Car> cars = new ArrayList<>();
+        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status FROM cars";
 
         try (Connection con = db.getConnection();
              Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery(
-                     "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status FROM cars"
-             )) {
+             ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
                 Car car = new Car(
@@ -115,3 +113,4 @@ public class CarRepository implements ICarRepository {
 
         return cars;
     }
+}
