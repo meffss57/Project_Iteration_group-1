@@ -2,12 +2,13 @@ package com.company;
 
 import com.company.controllers.interfaces.ICarController;
 
+import com.company.view.CarPrinter;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class MyApplication {
     private final Scanner scanner = new Scanner(System.in);
-
     private final ICarController controller;
 
     public MyApplication(ICarController controller) {
@@ -16,14 +17,15 @@ public class MyApplication {
 
     private void mainMenu() {
         System.out.println();
-        System.out.println("Welcome to Car Dealership ");
-        System.out.println("Select option:");
-        System.out.println("1. Get car");
-        System.out.println("2. Get user by id");
-        System.out.println("3. Create user");
+        System.out.println("========================================");
+        System.out.println("CAR DEALERSHIP SYSTEM");
+        System.out.println("========================================");
+        System.out.println("1.  View all cars");
+        System.out.println("2. Get car by ID");
+        System.out.println("3. Create new car");
         System.out.println("0. Exit");
-        System.out.println();
-        System.out.print("Enter option (1-3):  ");
+        System.out.println("========================================");
+        System.out.print("Choose option: ");
     }
 
     public void start() {
@@ -34,62 +36,105 @@ public class MyApplication {
                 int option = scanner.nextInt();
 
                 switch (option) {
-                    case 1: getAllCarsMenu(); break;
-                    case 2: getCarByIdMenu(); break;
-                    case 3: createCarMenu(); break;
-                    default: return;
+                    case 1 -> getAllCarsMenu();
+                    case 2 -> getCarByIdMenu();
+                    case 3 -> createCarMenu();
+                    case 0 -> {
+                        System.out.println("\nGoodbye!");
+                        return;
+                    }
+                    default -> System.out.println("Invalid option");
                 }
+
             } catch (InputMismatchException e) {
-                System.out.println("Input must be integer: " + e);
-                scanner.nextLine(); // to ignore incorrect input
+                System.out.println("Input must be an integer");
+                scanner.nextLine();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println("Error: " + e.getMessage());
             }
 
-            System.out.println("*************************");
+            System.out.println("\nPress ENTER to continue...");
+            scanner.nextLine();
+            scanner.nextLine();
         }
     }
 
     public void getAllCarsMenu() {
+        System.out.println();
+        System.out.println("========================================");
+        System.out.println("LIST OF ALL CARS");
+        System.out.println("========================================");
+
         String response = controller.getAllCars();
-        System.out.println(response);
+        CarPrinter.printAllCars(response);
     }
 
     public void getCarByIdMenu() {
-        System.out.println("Please enter id");
-
+        System.out.print("Please enter id: ");
         int id = scanner.nextInt();
 
+        System.out.println();
+        System.out.println("========================================");
+        System.out.println("🔍 CAR SEARCH RESULT");
+        System.out.println("========================================");
+
         String response = controller.getCar(id);
-        System.out.println(response);
+
+        if ("Car was not found!".equals(response)) {
+            System.out.println("Car was not found!");
+        } else {
+            CarPrinter.printCarCard(response);
+        }
     }
 
-    public void createCarMenu() {
-        System.out.println("Please enter vin");
+    private void createCarMenu() {
+        System.out.println();
+        System.out.println("========================================");
+        System.out.println("📝  CREATE NEW CAR");
+        System.out.println("========================================");
+
+        System.out.print("VIN: ");
         String vin = scanner.next();
-        System.out.println("Please enter brand");
+
+        System.out.print("Brand: ");
         String brand = scanner.next();
-        System.out.println("Please enter model");
+
+        System.out.print("Model: ");
         String model = scanner.next();
-        System.out.println("Please enter branch_city");
+
+        System.out.print("Branch city: ");
         String branchCity = scanner.next();
-        System.out.println("Please enter year");
+
+        System.out.print("Year: ");
         int year = scanner.nextInt();
-        System.out.println("Please enter color");
+
+        System.out.print("Color: ");
         String color = scanner.next();
-        System.out.println("Please enter engine_type");
+
+        System.out.print("Engine type: ");
         String engineType = scanner.next();
-        System.out.println("Please enter engine_volume");
-        Double engineVolume = scanner.nextDouble();
-        System.out.println("Please enter mileage");
+
+        System.out.print("Engine volume: ");
+        double engineVolume = scanner.nextDouble();
+
+        System.out.print("Mileage: ");
         int mileage = scanner.nextInt();
-        System.out.println("Please enter sale_price");
-        Double salePrice = scanner.nextDouble();
-        System.out.println("Please enter status");
+
+        System.out.print("Sale price: ");
+        double salePrice = scanner.nextDouble();
+
+        System.out.print("Status: ");
         String status = scanner.next();
 
+        String response = controller.createCar(
+                vin, brand, model, branchCity,
+                year, color, engineType,
+                engineVolume, mileage, salePrice, status
+        );
 
-        String response = controller.createCar(vin,  brand,  model,  branchCity,  year, color, engineType,  engineVolume,  mileage,  salePrice,  status);
+        System.out.println();
+        System.out.println("========================================");
         System.out.println(response);
+        System.out.println("========================================");
     }
-}   
+}
