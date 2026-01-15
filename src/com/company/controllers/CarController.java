@@ -1,12 +1,13 @@
 package com.company.controllers;
 
+import com.company.controllers.interfaces.Price;
 import com.company.models.Car;
 import com.company.controllers.interfaces.ICarController;
 import com.company.repositories.interfaces.ICarRepository;
 
 import java.util.List;
 
-public class CarController implements ICarController {
+public class CarController implements ICarController, Price {
     private final ICarRepository repo;
 
     public CarController(ICarRepository repo) { // Dependency Injection
@@ -41,8 +42,12 @@ public class CarController implements ICarController {
         return response.toString();
     }
 
+
     @Override
-    public String sortingCars(){
-        return "something";
+    public double getPrice(){
+        return 0;
     }
+
+
+
 }

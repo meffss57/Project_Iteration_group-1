@@ -1,9 +1,10 @@
 package com.company;
 
 import com.company.controllers.interfaces.ICarController;
-
+import com.company.models.Car;
 import com.company.view.CarPrinter;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -140,6 +141,16 @@ public class MyApplication {
         System.out.println("========================================");
     }
 
+    public void sortcars() {
 
-    public void sortcars(){}
+        System.out.println();
+        System.out.println("========================================");
+        System.out.println("📝  SORTING CARS");
+        System.out.println("========================================");
+
+
+
+    }
 }
+
+

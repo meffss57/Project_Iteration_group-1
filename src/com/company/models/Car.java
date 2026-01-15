@@ -1,6 +1,7 @@
 package com.company.models;
+import com.company.controllers.interfaces.Price;
 
-public class Car {
+public class Car implements Price, Comparable<Car>{
     private int carId;
     private String vin;
     private String brand;
@@ -152,4 +153,13 @@ public class Car {
                 ", status='" + status + '\'' +
                 '}';
     }
+
+    public int compareTo(Car anotherCar){
+        return Double.compare(this.getPrice(), anotherCar.getPrice());
+    }
+
+    public double getPrice(){
+        return 0;
+    }
+
 }
