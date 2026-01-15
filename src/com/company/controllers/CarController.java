@@ -40,4 +40,9 @@ public class CarController implements ICarController {
 
         return response.toString();
     }
+
+    @Override
+    public String sortingCars(){
+        return "something";
+    }
 }

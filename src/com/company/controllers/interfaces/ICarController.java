@@ -10,4 +10,6 @@ public interface ICarController {
     String getCar(int carId);
 
     String getAllCars();
+
+    String sortingCars();
 }
