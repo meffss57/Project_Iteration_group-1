@@ -74,4 +74,4 @@ public class MyApplication {
         String response = controller.createUser(name, surname, gender);
         System.out.println(response);
     }
-}
+}   
