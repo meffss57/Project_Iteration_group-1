@@ -18,6 +18,8 @@ public class Main {
         app.start();
 
         db.close();
+
+        System.out.println("Hello");
     }
 }
 
