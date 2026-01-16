@@ -1,13 +1,13 @@
 package com.company.controllers;
 
-import com.company.controllers.interfaces.Price;
 import com.company.models.Car;
 import com.company.controllers.interfaces.ICarController;
 import com.company.repositories.interfaces.ICarRepository;
 
+import java.util.Collections;
 import java.util.List;
 
-public class CarController implements ICarController, Price {
+public class CarController implements ICarController{
     private final ICarRepository repo;
 
     public CarController(ICarRepository repo) { // Dependency Injection
@@ -42,10 +42,18 @@ public class CarController implements ICarController, Price {
         return response.toString();
     }
 
-
     @Override
-    public double getPrice(){
-        return 0;
+    public String sortCars() {
+        List<Car> cars = repo.sortCars();
+
+        Collections.sort(cars);
+
+        StringBuilder response = new StringBuilder();
+        for (Car car : cars) {
+            response.append(car.toString()).append("\n");
+        }
+
+        return response.toString();
     }
 
 

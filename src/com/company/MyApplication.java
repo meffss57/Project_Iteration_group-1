@@ -6,7 +6,9 @@ import com.company.view.CarPrinter;
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Collections;
 
 public class MyApplication {
     private final Scanner scanner = new Scanner(System.in);
@@ -41,7 +43,7 @@ public class MyApplication {
                     case 1 -> getAllCarsMenu();
                     case 2 -> getCarByIdMenu();
                     case 3 -> createCarMenu();
-                    case 4 -> sortcars();
+                    case 4 -> sortCars();
                     case 0 -> {
                         System.out.println("\nGoodbye!");
                         return;
@@ -141,15 +143,14 @@ public class MyApplication {
         System.out.println("========================================");
     }
 
-    public void sortcars() {
-
+    public void sortCars() {
         System.out.println();
         System.out.println("========================================");
-        System.out.println("📝  SORTING CARS");
+        System.out.println("LIST OF ALL SORTED CARS");
         System.out.println("========================================");
 
-
-
+        String response = controller.sortCars();
+        CarPrinter.printAllCars(response);
     }
 }
 

@@ -7,6 +7,7 @@ import com.company.repositories.interfaces.ICarRepository;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 public class CarRepository implements ICarRepository {
     private final IDB db;
@@ -113,4 +114,42 @@ public class CarRepository implements ICarRepository {
 
         return cars;
     }
+
+
+    @Override
+    public List<Car> sortCars() {
+        List<Car> cars = new ArrayList<>();
+        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status FROM cars";
+
+        try (Connection con = db.getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Car car = new Car(
+                        rs.getInt("car_id"),
+                        rs.getString("vin"),
+                        rs.getString("brand"),
+                        rs.getString("model"),
+                        rs.getString("branch_city"),
+                        rs.getInt("year"),
+                        rs.getString("color"),
+                        rs.getString("engine_type"),
+                        rs.getDouble("engine_volume"),
+                        rs.getInt("mileage"),
+                        rs.getDouble("sale_price"),
+                        rs.getString("status")
+                );
+                cars.add(car);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+
+        Collections.sort(cars);
+
+        return cars;
+    }
+
 }
