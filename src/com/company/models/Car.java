@@ -159,7 +159,7 @@ public class Car implements Price, Comparable<Car>{
     }
 
     public double getPrice(){
-        return 0;
+        return salePrice;
     }
 
 }
