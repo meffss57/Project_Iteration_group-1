@@ -8,4 +8,5 @@ public interface ICarRepository {
     boolean createCar(Car car);
     Car getCar(int id);
     List<Car> getAllCars();
+    List<Car> sortCars();
 }
