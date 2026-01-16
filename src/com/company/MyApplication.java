@@ -33,7 +33,7 @@ public class MyApplication {
         System.out.println("1. View all cars");
         System.out.println("2. Get car by ID");
         System.out.println("3. Sort cars by price");
-        System.out.println("0. Exit");
+        System.out.println("0. Back");
         System.out.print("Choose option: ");
     }
 
@@ -57,19 +57,24 @@ public class MyApplication {
             System.out.println("Wrong password");
         }
     }
+    private void runUserMenu() {
+        while (true) {
+            userMenu();
+            int option = scanner.nextInt();
 
-    private void handleUserOption(int option) {
-        switch (option) {
-            case 1 -> getAllCarsMenu();
-            case 2 -> getCarByIdMenu();
-            case 3 -> sortCars();
-            case 0 -> {
-                System.out.println("Goodbye!");
-                System.exit(0);
+            switch (option) {
+                case 1 -> getAllCarsMenu();
+                case 2 -> getCarByIdMenu();
+                case 3 -> sortCars();
+                case 0 -> {
+                    System.out.println("Goodbye!");
+                    return;
+                }
+                default -> System.out.println("Invalid option");
             }
-            default -> System.out.println("Invalid option");
         }
     }
+
 
     private void handleAdminOption(int option) {
         switch (option) {
@@ -93,8 +98,7 @@ public class MyApplication {
 
                     switch (choice) {
                         case 1 -> {
-                            userMenu();
-                            handleUserOption(scanner.nextInt());
+                            runUserMenu();
                         }
                         case 2 -> adminLogin();
                         case 0 -> {
