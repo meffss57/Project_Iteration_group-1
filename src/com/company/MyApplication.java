@@ -32,6 +32,7 @@ public class MyApplication {
         System.out.println("\nWELCOME DEAR CUSTOMER");
         System.out.println("1. View all cars");
         System.out.println("2. Get car by ID");
+        System.out.println("3. Sort cars by price");
         System.out.println("0. Exit");
         System.out.print("Choose option: ");
     }
@@ -61,6 +62,7 @@ public class MyApplication {
         switch (option) {
             case 1 -> getAllCarsMenu();
             case 2 -> getCarByIdMenu();
+            case 3 -> sortCars();
             case 0 -> {
                 System.out.println("Goodbye!");
                 System.exit(0);
@@ -185,5 +187,13 @@ public class MyApplication {
         );
 
         System.out.println("\n" + response);
+    }
+    private void sortCars() {
+        System.out.println("\n=================================");
+        System.out.println("LIST OF ALL SORTED CARS");
+        System.out.println("=================================");
+
+        String response = controller.sortCars();
+        CarPrinter.printAllCars(response);
     }
 }
