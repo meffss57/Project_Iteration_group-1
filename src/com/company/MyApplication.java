@@ -42,7 +42,7 @@ public class MyApplication {
         System.out.println("1. View all cars");
         System.out.println("2. Get car by ID");
         System.out.println("3. Create car");
-        System.out.println("0. Logout");
+        System.out.println("0. Back");
         System.out.print("Choose option: ");
     }
 
