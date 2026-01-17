@@ -13,7 +13,7 @@ public class Main {
                 "jdbc:postgresql://localhost:5432",
                 "postgres",
                 "0000",
-                "somedb"
+                "postgres"
         );
 
         ICarRepository repo = new CarRepository(db);
