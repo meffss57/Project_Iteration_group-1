@@ -21,7 +21,7 @@ public class MyApplication {
         System.out.println("========================================");
         System.out.println("CAR DEALERSHIP SYSTEM");
         System.out.println("========================================");
-        System.out.println("1.  View all cars");
+        System.out.println("1. View all cars");
         System.out.println("2. Get car by ID");
         System.out.println("3. Create new car");
         System.out.println("4. Sort cars");
@@ -78,7 +78,7 @@ public class MyApplication {
 
         System.out.println();
         System.out.println("========================================");
-        System.out.println("🔍 CAR SEARCH RESULT");
+        System.out.println("CAR SEARCH RESULT");
         System.out.println("========================================");
 
         String response = controller.getCar(id);
@@ -93,7 +93,7 @@ public class MyApplication {
     private void createCarMenu() {
         System.out.println();
         System.out.println("========================================");
-        System.out.println("📝  CREATE NEW CAR");
+        System.out.println("CREATE NEW CAR");
         System.out.println("========================================");
 
         System.out.print("VIN: ");
@@ -145,7 +145,7 @@ public class MyApplication {
 
         System.out.println();
         System.out.println("========================================");
-        System.out.println("📝  SORTING CARS");
+        System.out.println("SORTING CARS ");
         System.out.println("========================================");
 
 
