@@ -4,7 +4,6 @@ import com.company.controllers.CarController;
 import com.company.controllers.interfaces.ICarController;
 import com.company.data.PostgresDB;
 import com.company.data.interfaces.IDB;
-import com.company.repositories.AdminRepository;
 import com.company.repositories.CarRepository;
 import com.company.repositories.interfaces.ICarRepository;
 
@@ -14,18 +13,15 @@ public class Main {
                 "jdbc:postgresql://localhost:5432",
                 "postgres",
                 "0000",
-                "somedb"
+                "postgres"
         );
 
         ICarRepository repo = new CarRepository(db);
         ICarController controller = new CarController(repo);
 
-        AdminRepository adminRepo = new AdminRepository(db);
-        MyApplication app = new MyApplication(controller, adminRepo);
-
+        MyApplication app = new MyApplication(controller);
         app.start();
 
         db.close();
     }
 }
-
