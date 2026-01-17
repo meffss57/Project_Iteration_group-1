@@ -23,7 +23,7 @@ public class MyApplication {
 
     private void startMenu() {
         System.out.println("\n========================================");
-        System.out.println("WELCONE TO KZ.WHEELS");
+        System.out.println("WELCOME TO KZ.WHEELS");
         System.out.println("========================================");
         System.out.println("1. Continue as user");
         System.out.println("2. Login as admin");
