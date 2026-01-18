@@ -2,6 +2,9 @@ package com.company;
 
 import com.company.controllers.interfaces.ICarController;
 import com.company.view.CarPrinter;
+import com.company.services.AdminAuthService;
+import com.company.Role;
+
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -10,12 +13,15 @@ public class MyApplication {
 
     private final Scanner scanner = new Scanner(System.in);
     private final ICarController controller;
+    private final AdminAuthService authService;
 
     private Role currentRole = Role.USER;
 
-    public MyApplication(ICarController controller) {
+    public MyApplication(ICarController controller, AdminAuthService authService) {
         this.controller = controller;
+        this.authService = authService;
     }
+
 
 
     private void startMenu() {
@@ -47,16 +53,20 @@ public class MyApplication {
     }
 
     private void adminLogin() {
+        System.out.print("Enter admin login: ");
+        String username = scanner.next();
+
         System.out.print("Enter admin password: ");
         String password = scanner.next();
 
-        if ("0101".equals(password)) {
+        if (authService.username(username, password)) {
             currentRole = Role.ADMIN;
             System.out.println("Admin access granted");
         } else {
-            System.out.println("Wrong password");
+            System.out.println("Wrong login or password");
         }
     }
+
 
     private void handleUserOption(int option) {
         switch (option) {
