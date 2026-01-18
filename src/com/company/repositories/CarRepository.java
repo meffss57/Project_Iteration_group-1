@@ -152,4 +152,132 @@ public class CarRepository implements ICarRepository {
         return cars;
     }
 
+    private List<Car> mapCars(ResultSet rs) throws SQLException {
+        List<Car> cars = new ArrayList<>();
+        while (rs.next()) {
+            cars.add(new Car(
+                    rs.getInt("car_id"),
+                    rs.getString("vin"),
+                    rs.getString("brand"),
+                    rs.getString("model"),
+                    rs.getString("branch_city"),
+                    rs.getInt("year"),
+                    rs.getString("color"),
+                    rs.getString("engine_type"),
+                    rs.getDouble("engine_volume"),
+                    rs.getInt("mileage"),
+                    rs.getDouble("sale_price"),
+                    rs.getString("status")
+            ));
+        }
+        return cars;
+    }
+
+    @Override
+    public List<Car> filterByBrand(String car_brand) {
+        String sql = "SELECT * FROM cars WHERE LOWER(brand)=LOWER(?)";
+        try (Connection con = db.getConnection();
+             PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, car_brand);
+            try (ResultSet rs = st.executeQuery()) {
+                return mapCars(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Car> filterByCity(String car_city) {
+        String sql = "SELECT * FROM cars WHERE LOWER(branch_city)=LOWER(?)";
+        try (Connection con = db.getConnection();
+             PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, car_city);
+            try (ResultSet rs = st.executeQuery()) {
+                return mapCars(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Car> filterByYear(int car_year) {
+        String sql = "SELECT * FROM cars WHERE year=?";
+        try (Connection con = db.getConnection();
+             PreparedStatement st = con.prepareStatement(sql)) {
+            st.setInt(1, car_year);
+            try (ResultSet rs = st.executeQuery()) {
+                return mapCars(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Car> filterByEngineType(String car_enginetype) {
+        String sql = "SELECT * FROM cars WHERE LOWER(engine_type)=LOWER(?)";
+        try (Connection con = db.getConnection();
+             PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, car_enginetype);
+            try (ResultSet rs = st.executeQuery()) {
+                return mapCars(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Car> filterByPriceRange(double car_price_low, double car_price_high) {
+        String sql = "SELECT * FROM cars WHERE sale_price BETWEEN ? AND ? ORDER BY sale_price";
+        try (Connection con = db.getConnection();
+             PreparedStatement st = con.prepareStatement(sql)) {
+
+            st.setDouble(1, car_price_low);
+            st.setDouble(2, car_price_high);
+
+            try (ResultSet rs = st.executeQuery()) {
+                return mapCars(rs);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    private List<String> fetchDistinct(String sql, String col) {
+        List<String> list = new ArrayList<>();
+        try (Connection con = db.getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) list.add(rs.getString(col));
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+        return list;
+    }
+
+
+    @Override
+    public List<String> getAvailableBrands() {
+        return fetchDistinct("SELECT DISTINCT brand FROM cars ORDER BY brand", "brand");
+    }
+
+    @Override
+    public List<String> getAvailableCities() {
+        return fetchDistinct("SELECT DISTINCT branch_city FROM cars ORDER BY branch_city", "branch_city");
+    }
+
+    @Override
+    public List<String> getAvailableEngineTypes() {
+        return fetchDistinct("SELECT DISTINCT engine_type FROM cars ORDER BY engine_type", "engine_type");
+    }
+
 }
