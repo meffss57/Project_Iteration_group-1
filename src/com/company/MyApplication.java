@@ -2,6 +2,9 @@ package com.company;
 
 import com.company.controllers.interfaces.ICarController;
 import com.company.view.CarPrinter;
+import com.company.services.AdminAuthService;
+import com.company.Role;
+
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -10,12 +13,15 @@ public class MyApplication {
 
     private final Scanner scanner = new Scanner(System.in);
     private final ICarController controller;
+    private final AdminAuthService authService;
 
     private Role currentRole = Role.USER;
 
-    public MyApplication(ICarController controller) {
+    public MyApplication(ICarController controller, AdminAuthService authService) {
         this.controller = controller;
+        this.authService = authService;
     }
+
 
 
     private void startMenu() {
@@ -32,9 +38,8 @@ public class MyApplication {
         System.out.println("\nWELCOME DEAR CUSTOMER");
         System.out.println("1. View all cars");
         System.out.println("2. Get car by ID");
-        System.out.println("3. Sort cars by price");
-        System.out.println("4. Buy car");
-        System.out.println("0. Back");
+        System.out.println("3. Filter cars");
+        System.out.println("0. Exit");
         System.out.print("Choose option: ");
     }
 
@@ -48,31 +53,29 @@ public class MyApplication {
     }
 
     private void adminLogin() {
+        System.out.print("Enter admin login: ");
+        String username = scanner.next();
+
         System.out.print("Enter admin password: ");
         String password = scanner.next();
 
-        if ("0101".equals(password)) {
+        if (authService.username(username, password)) {
             currentRole = Role.ADMIN;
             System.out.println("Admin access granted");
         } else {
-            System.out.println("Wrong password");
+            System.out.println("Wrong login or password");
         }
     }
-    private void runUserMenu() {
-        while (true) {
-            userMenu();
-            int option = scanner.nextInt();
 
-            switch (option) {
-                case 1 -> getAllCarsMenu();
-                case 2 -> getCarByIdMenu();
-                case 3 -> sortCars();
-                case 4 -> buyCar();
-                case 0 -> {
-                    System.out.println("Goodbye!");
-                    return;
-                }
-                default -> System.out.println("Invalid option");
+
+    private void handleUserOption(int option) {
+        switch (option) {
+            case 1 -> getAllCarsMenu();
+            case 2 -> getCarByIdMenu();
+            case 3-> FilterCars();
+            case 0 -> {
+                System.out.println("Goodbye!");
+                System.exit(0);
             }
         }
     }
@@ -122,8 +125,6 @@ public class MyApplication {
         }
     }
 
-    /* ================= EXISTING FUNCTIONS ================= */
-
     private void getAllCarsMenu() {
         System.out.println("\n=================================");
         System.out.println("LIST OF ALL CARS");
@@ -148,6 +149,92 @@ public class MyApplication {
         } else {
             CarPrinter.printCarCard(response);
         }
+    }
+
+    private void FilterCars(){
+        System.out.println("\n=================================");
+        System.out.println("Choose How to filter: ");
+        System.out.println("1.Filter by Brand");
+        System.out.println("2.Filter by City");
+        System.out.println("3.Filter by year");
+        System.out.println("4.Filter by engine_type");
+        System.out.println("5.Filter by price");
+        System.out.println("0.Back");
+        System.out.println("=================================");
+
+        System.out.println("Enter your choice: ");
+        int choice = scanner.nextInt();
+
+        switch (choice){
+            case 1 -> FilterbyBrand();
+            case 2 -> FilterbyCity();
+            case 3 -> FilterbyYear();
+            case 4 -> FilterbyEnginetype();
+            case 5 -> FilterbyPrice();
+            case 0 -> { return; }
+            default -> System.out.println("Invalid option");
+        }
+    }
+
+    private void FilterbyBrand() {
+        scanner.nextLine();
+        System.out.println("Available brands:\n" + controller.getAvailableBrands());
+
+        System.out.print("Enter brand: ");
+        String brand = scanner.nextLine();
+
+        String response = controller.filterByBrand(brand);
+        if ("Car was not found!".equals(response)) System.out.println("Unfortunately Car was not found!");
+        else CarPrinter.printAllCars(response);
+    }
+
+    private void FilterbyYear() {
+        System.out.print("Enter year: ");
+        int year = readInt();
+
+        String response = controller.filterByYear(year);
+
+        if ("Car was not found!".equals(response)) {
+            System.out.println("Unfortunately Car was not found!");
+        } else {
+            CarPrinter.printAllCars(response);
+        }
+    }
+
+    private void FilterbyEnginetype() {
+        scanner.nextLine();
+        System.out.println("Available engine types:\n" + controller.getAvailableEngineTypes());
+
+        System.out.print("Enter engine type: ");
+        String type = scanner.nextLine();
+
+        String response = controller.filterByEngineType(type);
+        if ("Car was not found!".equals(response)) System.out.println("Unfortunately Car was not found!");
+        else CarPrinter.printAllCars(response);
+    }
+
+    private void FilterbyCity() {
+        scanner.nextLine();
+        System.out.println("Available cities:\n" + controller.getAvailableCities());
+
+        System.out.print("Enter city: ");
+        String city = scanner.nextLine();
+
+        String response = controller.filterByCity(city);
+        if ("Car was not found!".equals(response)) System.out.println("Unfortunately Car was not found!");
+        else CarPrinter.printAllCars(response);
+    }
+
+    private void FilterbyPrice() {
+        System.out.print("Enter low price: ");
+        double low = readDouble();
+        System.out.print("Enter high price: ");
+        double high = readDouble();
+        if (low > high) { double t=low; low=high; high=t; }
+
+        String response = controller.filterByPriceRange(low, high);
+        if ("Car was not found!".equals(response)) System.out.println("Unfortunately Car was not found!");
+        else CarPrinter.printAllCars(response);
     }
 
     private void createCarMenu() {
@@ -194,28 +281,17 @@ public class MyApplication {
 
         System.out.println("\n" + response);
     }
-    private void sortCars() {
-        System.out.println("\n=================================");
-        System.out.println("LIST OF ALL SORTED CARS");
-        System.out.println("=================================");
 
-        String response = controller.sortCars();
-        CarPrinter.printAllCars(response);
+    private int readInt() {
+        int x = scanner.nextInt();
+        scanner.nextLine();
+        return x;
     }
-    private void buyCar(){
-        System.out.print("\nEnter car ID: ");
-        int id = scanner.nextInt();
 
-        System.out.println("\n=================================");
-        System.out.println("CAR SEARCH RESULT");
-        System.out.println("=================================");
-
-        String response = controller.getCar(id);
-
-        if ("Car was not found!".equals(response)) {
-            System.out.println("Car was not found!");
-        } else {
-            CarPrinter.printCarCard(response);
-        }
+    private double readDouble() {
+        double x = scanner.nextDouble();
+        scanner.nextLine();
+        return x;
     }
+
 }

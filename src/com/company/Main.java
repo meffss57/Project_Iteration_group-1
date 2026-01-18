@@ -4,8 +4,10 @@ import com.company.controllers.CarController;
 import com.company.controllers.interfaces.ICarController;
 import com.company.data.PostgresDB;
 import com.company.data.interfaces.IDB;
+import com.company.repositories.AdminRepository;
 import com.company.repositories.CarRepository;
 import com.company.repositories.interfaces.ICarRepository;
+import com.company.services.AdminAuthService;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,7 +21,11 @@ public class Main {
         ICarRepository repo = new CarRepository(db);
         ICarController controller = new CarController(repo);
 
-        MyApplication app = new MyApplication(controller);
+        AdminRepository adminRepo = new AdminRepository(db);
+        AdminAuthService authService = new AdminAuthService(adminRepo);
+
+        MyApplication app = new MyApplication(controller, authService);
+
         app.start();
 
         db.close();

@@ -13,5 +13,14 @@ public interface ICarController {
 
     String sortCars();
 
-    String buyCar(int carId);
+    String filterByBrand(String car_brand);
+    String filterByCity(String car_city);
+    String filterByYear(int car_year);
+    String filterByEngineType(String car_engine_type);
+    String filterByPriceRange(double car_price_low, double car_price_high);
+
+    String getAvailableBrands();
+    String getAvailableCities();
+    String getAvailableEngineTypes();
+
 }
