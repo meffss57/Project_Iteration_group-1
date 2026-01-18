@@ -75,6 +75,12 @@ public class CarController implements ICarController{
         return (car == null ? "Car was not found!" : car.toString());
     }
 
+    public String buyCar(int car_id){
+        Car car = repo.buyCar(car_id);
+
+        return (car == null ? "Car has been sold or is archived!" : car.toString());
+    }
+
     @Override
     public String getAllCars() {
         List<Car> cars = repo.getAllCars();

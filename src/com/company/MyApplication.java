@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.controllers.interfaces.ICarController;
+import com.company.models.Car;
 import com.company.view.CarPrinter;
 import com.company.services.AdminAuthService;
 import com.company.Role;
@@ -38,7 +39,8 @@ public class MyApplication {
         System.out.println("\nWELCOME DEAR CUSTOMER");
         System.out.println("1. View all cars");
         System.out.println("2. Get car by ID");
-        System.out.println("3. Filter cars");
+        System.out.println("3. Buy car by ID");
+        System.out.println("4. Filter cars");
         System.out.println("0. Back");
         System.out.print("Choose option: ");
     }
@@ -76,7 +78,8 @@ public class MyApplication {
             switch (option) {
                 case 1 -> getAllCarsMenu();
                 case 2 -> getCarByIdMenu();
-                case 3 -> FilterCars();
+                case 3 -> buyCarByIdMenu();
+                case 4 -> FilterCars();
                 case 0 -> {
                     System.out.println("Goodbye!");
                     return;
@@ -155,6 +158,24 @@ public class MyApplication {
             System.out.println("Car was not found!");
         } else {
             CarPrinter.printCarCard(response);
+        }
+    }
+
+    private void buyCarByIdMenu() {
+        System.out.print("\nEnter car ID: ");
+        int id = scanner.nextInt();
+
+        System.out.println("\n=================================");
+        System.out.println("CAR PURCHASE RESULT");
+        System.out.println("=================================");
+
+        String response = controller.buyCar(id);
+
+        if ("Car has been sold or is archived!".equals(response)) {
+            System.out.println("Сar has been sold or is archived!");
+        } else {
+            CarPrinter.printCarCard(response);
+            System.out.println("Congratulations!");
         }
     }
 
@@ -246,6 +267,15 @@ public class MyApplication {
         else CarPrinter.printAllCars(response);
     }
 
+    private void FilterCarsByASC() {
+        System.out.println("\n=================================");
+        System.out.println("LIST OF ALL SORTED CARS");
+        System.out.println("=================================");
+
+        String response = controller.FilterCarsByASC();
+        CarPrinter.printAllCars(response);
+    }
+
     private void createCarMenu() {
         System.out.println("\nCREATE NEW CAR");
 
@@ -303,12 +333,5 @@ public class MyApplication {
         return x;
     }
 
-    private void FilterCarsByASC() {
-        System.out.println("\n=================================");
-        System.out.println("LIST OF ALL SORTED CARS");
-        System.out.println("=================================");
 
-        String response = controller.getAllCars();
-        CarPrinter.printAllCars(response);
-    }
 }

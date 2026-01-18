@@ -11,6 +11,8 @@ public interface ICarController {
 
     String getAllCars();
 
+    String buyCar(int carId);
+
     String FilterCarsByASC();
 
     String filterByBrand(String car_brand);
