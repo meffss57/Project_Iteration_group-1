@@ -152,4 +152,40 @@ public class CarRepository implements ICarRepository {
         return cars;
     }
 
+    @Override
+    public Car buyCar(int carId) {
+        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status " +
+                "FROM cars WHERE car_id=?";
+
+        try (Connection con = db.getConnection();
+             PreparedStatement st = con.prepareStatement(sql)) {
+
+            st.setInt(1, carId);
+
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return new Car(
+                            rs.getInt("car_id"),
+                            rs.getString("vin"),
+                            rs.getString("brand"),
+                            rs.getString("model"),
+                            rs.getString("branch_city"),
+                            rs.getInt("year"),
+                            rs.getString("color"),
+                            rs.getString("engine_type"),
+                            rs.getDouble("engine_volume"),
+                            rs.getInt("mileage"),
+                            rs.getDouble("sale_price"),
+                            rs.getString("status")
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+
+        return null;
+    }
+
 }

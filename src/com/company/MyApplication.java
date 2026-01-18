@@ -33,6 +33,7 @@ public class MyApplication {
         System.out.println("1. View all cars");
         System.out.println("2. Get car by ID");
         System.out.println("3. Sort cars by price");
+        System.out.println("4. Buy car");
         System.out.println("0. Back");
         System.out.print("Choose option: ");
     }
@@ -66,6 +67,7 @@ public class MyApplication {
                 case 1 -> getAllCarsMenu();
                 case 2 -> getCarByIdMenu();
                 case 3 -> sortCars();
+                case 4 -> buyCar();
                 case 0 -> {
                     System.out.println("Goodbye!");
                     return;
@@ -199,5 +201,21 @@ public class MyApplication {
 
         String response = controller.sortCars();
         CarPrinter.printAllCars(response);
+    }
+    private void buyCar(){
+        System.out.print("\nEnter car ID: ");
+        int id = scanner.nextInt();
+
+        System.out.println("\n=================================");
+        System.out.println("CAR SEARCH RESULT");
+        System.out.println("=================================");
+
+        String response = controller.getCar(id);
+
+        if ("Car was not found!".equals(response)) {
+            System.out.println("Car was not found!");
+        } else {
+            CarPrinter.printCarCard(response);
+        }
     }
 }

@@ -56,6 +56,13 @@ public class CarController implements ICarController{
         return response.toString();
     }
 
+    @Override
+    public String buyCar(int car_id) {
+        Car car = repo.getCar(car_id);
+
+        return (car == null ? "Car was not found!" : car.toString());
+    }
+
 
 
 }

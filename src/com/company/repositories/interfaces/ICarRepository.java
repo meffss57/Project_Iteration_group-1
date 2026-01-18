@@ -9,4 +9,5 @@ public interface ICarRepository {
     Car getCar(int id);
     List<Car> getAllCars();
     List<Car> sortCars();
+    Car buyCar(int id);
 }
