@@ -6,8 +6,10 @@ import com.company.data.PostgresDB;
 import com.company.data.interfaces.IDB;
 import com.company.repositories.AdminRepository;
 import com.company.repositories.CarRepository;
+import com.company.repositories.UserRepository;
 import com.company.repositories.interfaces.ICarRepository;
 import com.company.services.AdminAuthService;
+import com.company.services.UserAuthService;
 
 public class Main {
     public static void main(String[] args) {
@@ -24,7 +26,13 @@ public class Main {
         AdminRepository adminRepo = new AdminRepository(db);
         AdminAuthService authService = new AdminAuthService(adminRepo);
 
-        MyApplication app = new MyApplication(controller, authService);
+
+        UserRepository userRepo = new UserRepository(db);
+        UserAuthService userAuthService = new UserAuthService(userRepo);
+
+        MyApplication app =
+                new MyApplication(controller, authService, userAuthService);
+
 
         app.start();
 

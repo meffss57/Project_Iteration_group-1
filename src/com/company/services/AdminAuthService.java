@@ -9,8 +9,7 @@ public class AdminAuthService {
     public AdminAuthService(AdminRepository repo) {
         this.repo = repo;
     }
-
-    public boolean username(String username, String password) {
+    public boolean login(String username, String password) {
         return repo.authenticate(username, password);
     }
 }
