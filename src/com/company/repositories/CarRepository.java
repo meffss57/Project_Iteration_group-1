@@ -81,6 +81,66 @@ public class CarRepository implements ICarRepository {
         return null;
     }
 
+
+    @Override
+    public Car buyCar(int carId) {
+        String updateSql = "UPDATE cars SET status = 'sold' " +
+                "WHERE car_id = ? AND status <> 'sold'";
+
+        String selectSql = "SELECT car_id, vin, brand, model, branch_city, year, color, " +
+                "engine_type, engine_volume, mileage, sale_price, status " +
+                "FROM cars WHERE car_id = ?";
+
+        try (Connection con = db.getConnection()) {
+            con.setAutoCommit(false);
+
+            int updated;
+            try (PreparedStatement up = con.prepareStatement(updateSql)) {
+                up.setInt(1, carId);
+                updated = up.executeUpdate();
+            }
+
+            if (updated == 0) {
+                con.rollback();
+                return null;
+            }
+
+            Car car;
+            try (PreparedStatement st = con.prepareStatement(selectSql)) {
+                st.setInt(1, carId);
+                try (ResultSet rs = st.executeQuery()) {
+                    if (!rs.next()) {
+                        con.rollback();
+                        return null;
+                    }
+
+                    car = new Car(
+                            rs.getInt("car_id"),
+                            rs.getString("vin"),
+                            rs.getString("brand"),
+                            rs.getString("model"),
+                            rs.getString("branch_city"),
+                            rs.getInt("year"),
+                            rs.getString("color"),
+                            rs.getString("engine_type"),
+                            rs.getDouble("engine_volume"),
+                            rs.getInt("mileage"),
+                            rs.getDouble("sale_price"),
+                            rs.getString("status") // тут уже будет "sold"
+                    );
+                }
+            }
+
+            con.commit();
+            return car;
+
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+
+        return null;
+    }
+
     @Override
     public List<Car> getAllCars() {
         List<Car> cars = new ArrayList<>();
@@ -115,42 +175,6 @@ public class CarRepository implements ICarRepository {
         return cars;
     }
 
-
-    @Override
-    public List<Car> FilterCarsByASC() {
-        List<Car> cars = new ArrayList<>();
-        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status FROM cars";
-
-        try (Connection con = db.getConnection();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-
-            while (rs.next()) {
-                Car car = new Car(
-                        rs.getInt("car_id"),
-                        rs.getString("vin"),
-                        rs.getString("brand"),
-                        rs.getString("model"),
-                        rs.getString("branch_city"),
-                        rs.getInt("year"),
-                        rs.getString("color"),
-                        rs.getString("engine_type"),
-                        rs.getDouble("engine_volume"),
-                        rs.getInt("mileage"),
-                        rs.getDouble("sale_price"),
-                        rs.getString("status")
-                );
-                cars.add(car);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("SQL error: " + e.getMessage());
-        }
-
-        Collections.sort(cars);
-
-        return cars;
-    }
 
     private List<Car> mapCars(ResultSet rs) throws SQLException {
         List<Car> cars = new ArrayList<>();
@@ -250,6 +274,42 @@ public class CarRepository implements ICarRepository {
             System.out.println("SQL error: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    @Override
+    public List<Car> FilterCarsByASC() {
+        List<Car> cars = new ArrayList<>();
+        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status FROM cars";
+
+        try (Connection con = db.getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Car car = new Car(
+                        rs.getInt("car_id"),
+                        rs.getString("vin"),
+                        rs.getString("brand"),
+                        rs.getString("model"),
+                        rs.getString("branch_city"),
+                        rs.getInt("year"),
+                        rs.getString("color"),
+                        rs.getString("engine_type"),
+                        rs.getDouble("engine_volume"),
+                        rs.getInt("mileage"),
+                        rs.getDouble("sale_price"),
+                        rs.getString("status")
+                );
+                cars.add(car);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+
+        Collections.sort(cars);
+
+        return cars;
     }
 
     private List<String> fetchDistinct(String sql, String col) {

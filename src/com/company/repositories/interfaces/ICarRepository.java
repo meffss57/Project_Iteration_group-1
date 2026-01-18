@@ -9,6 +9,8 @@ public interface ICarRepository {
 
     Car getCar(int id);
 
+    Car buyCar(int id);
+
     List<Car> getAllCars();
 
     List<Car> FilterCarsByASC();
