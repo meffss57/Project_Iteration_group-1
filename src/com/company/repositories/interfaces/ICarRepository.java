@@ -11,7 +11,7 @@ public interface ICarRepository {
 
     List<Car> getAllCars();
 
-    List<Car> sortCars();
+    List<Car> FilterCarsByASC();
 
     List<Car> filterByBrand(String car_brand);
 

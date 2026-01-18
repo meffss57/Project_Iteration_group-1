@@ -117,7 +117,7 @@ public class CarRepository implements ICarRepository {
 
 
     @Override
-    public List<Car> sortCars() {
+    public List<Car> FilterCarsByASC() {
         List<Car> cars = new ArrayList<>();
         String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status FROM cars";
 

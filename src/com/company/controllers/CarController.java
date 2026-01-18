@@ -88,8 +88,8 @@ public class CarController implements ICarController{
     }
 
     @Override
-    public String sortCars() {
-        List<Car> cars = repo.sortCars();
+    public String FilterCarsByASC() {
+        List<Car> cars = repo.FilterCarsByASC();
 
         Collections.sort(cars);
 

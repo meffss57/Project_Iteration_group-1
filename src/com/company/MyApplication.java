@@ -160,6 +160,7 @@ public class MyApplication {
         System.out.println("3.Filter by year");
         System.out.println("4.Filter by engine_type");
         System.out.println("5.Filter by price");
+        System.out.println("6.Filter by ascending order");
         System.out.println("0.Back");
         System.out.println("=================================");
 
@@ -172,6 +173,7 @@ public class MyApplication {
             case 3 -> FilterbyYear();
             case 4 -> FilterbyEnginetype();
             case 5 -> FilterbyPrice();
+            case 6 -> FilterCarsByASC();
             case 0 -> { return; }
             default -> System.out.println("Invalid option");
         }
@@ -295,4 +297,12 @@ public class MyApplication {
         return x;
     }
 
+    private void FilterCarsByASC() {
+        System.out.println("\n=================================");
+        System.out.println("LIST OF ALL SORTED CARS");
+        System.out.println("=================================");
+
+        String response = controller.getAllCars();
+        CarPrinter.printAllCars(response);
+    }
 }
