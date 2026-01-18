@@ -2,6 +2,7 @@ package com.company;
 
 import com.company.controllers.interfaces.ICarController;
 import com.company.models.Car;
+import com.company.services.UserAuthService;
 import com.company.view.CarPrinter;
 import com.company.services.AdminAuthService;
 import com.company.Role;
@@ -15,12 +16,14 @@ public class MyApplication {
     private final Scanner scanner = new Scanner(System.in);
     private final ICarController controller;
     private final AdminAuthService authService;
+    private final UserAuthService authService1;
 
-    private Role currentRole = Role.USER;
+    private Role currentRole;
 
-    public MyApplication(ICarController controller, AdminAuthService authService) {
+    public MyApplication(ICarController controller, AdminAuthService authService, UserAuthService authService1) {
         this.controller = controller;
         this.authService = authService;
+        this.authService1 = authService1;
     }
 
 
@@ -63,6 +66,21 @@ public class MyApplication {
 
         if (authService.username(username, password)) {
             currentRole = Role.ADMIN;
+            System.out.println("Admin access granted");
+        } else {
+            System.out.println("Wrong login or password");
+        }
+    }
+
+    private void userLogin() {
+        System.out.print("Enter admin login: ");
+        String username = scanner.next();
+
+        System.out.print("Enter admin password: ");
+        String password = scanner.next();
+
+        if (authService1.username(username, password)) {
+            currentRole = Role.USER;
             System.out.println("Admin access granted");
         } else {
             System.out.println("Wrong login or password");
