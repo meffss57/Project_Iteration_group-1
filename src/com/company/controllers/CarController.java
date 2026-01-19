@@ -97,7 +97,6 @@ public class CarController implements ICarController{
     public String FilterCarsByASC() {
         List<Car> cars = repo.FilterCarsByASC();
 
-        Collections.sort(cars);
 
         StringBuilder response = new StringBuilder();
         for (Car car : cars) {
