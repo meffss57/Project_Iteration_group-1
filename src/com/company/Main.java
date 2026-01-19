@@ -20,7 +20,6 @@ public class Main {
 
         IDB db = new PostgresDB(url, user, password, dbName);
 
-
         ICarRepository repo = new CarRepository(db);
         ICarController controller = new CarController(repo);
 
