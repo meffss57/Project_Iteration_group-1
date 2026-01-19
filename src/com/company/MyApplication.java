@@ -20,9 +20,7 @@ public class MyApplication {
 
     private Role currentRole = Role.USER;
 
-    public MyApplication(ICarController controller,
-                         AdminAuthService authService,
-                         UserAuthService userAuthService) {
+    public MyApplication(ICarController controller, AdminAuthService authService, UserAuthService userAuthService) {
         this.controller = controller;
         this.authService = authService;
         this.userAuthService = userAuthService;
@@ -46,8 +44,6 @@ public class MyApplication {
     }
 
 
-
-
     private void userMenu() {
         System.out.println("\nWELCOME DEAR CUSTOMER");
         System.out.println("1. View all cars");
@@ -57,6 +53,9 @@ public class MyApplication {
         System.out.println("0. Back");
         System.out.print("Choose option: ");
     }
+
+
+
 
     private void adminMenu() {
         System.out.println("\nADMIN MENU");
@@ -156,6 +155,8 @@ public class MyApplication {
             default -> System.out.println("Invalid option");
         }
     }
+
+
 
 
 
