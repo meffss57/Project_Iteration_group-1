@@ -17,7 +17,6 @@ public class Car implements Price, Comparable<Car>{
 
     public Car() {}
 
-    // Constructor without id (for INSERT)
     public Car(String vin, String brand, String model, String branchCity, int year, String color,
                String engineType, double engineVolume, int mileage, double salePrice, String status) {
         this.vin = vin;
@@ -33,13 +32,11 @@ public class Car implements Price, Comparable<Car>{
         this.status = status;
     }
 
-    // Constructor with id (for SELECT)
     public Car(int carId, String vin, String brand, String model, String branchCity, int year, String color, String engineType, double engineVolume, int mileage, double salePrice, String status) {
         this(vin, brand, model, branchCity, year, color, engineType, engineVolume, mileage, salePrice, status);
         this.carId = carId;
     }
 
-    // Getters / Setters
     public int getCarId() {
         return carId;
     }
