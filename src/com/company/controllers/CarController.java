@@ -6,6 +6,7 @@ import com.company.repositories.interfaces.ICarRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CarController implements ICarController{
     private final ICarRepository repo;
@@ -23,11 +24,10 @@ public class CarController implements ICarController{
         return (created ? "Car was created!" : "Car creation was failed!");
     }
 
+    // Appilication of lambda(r)
     private String carsToString(List<Car> cars) {
         if (cars == null || cars.isEmpty()) return "Car was not found!";
-        StringBuilder sb = new StringBuilder();
-        for (Car c : cars) sb.append(c).append("\n");
-        return sb.toString();
+        return cars.stream().map(Car::toString).collect(Collectors.joining("\n"));
     }
 
     @Override
@@ -75,9 +75,10 @@ public class CarController implements ICarController{
         return (car == null ? "Car was not found!" : car.toString());
     }
 
-    public String buyCar(int car_id){
-        Car car = repo.buyCar(car_id);
-
+    // buycar can recognize the buyer and write to the table purchases
+    @Override
+    public String buyCar(int car_id, int userId) {
+        Car car = repo.buyCar(car_id, userId);
         return (car == null ? "Car has been sold or is archived!" : car.toString());
     }
 
@@ -106,6 +107,10 @@ public class CarController implements ICarController{
         return response.toString();
     }
 
-
+    // added Join
+    @Override
+    public String getFullCarDescription(int carId) {
+        return repo.getFullCarDescription(carId);
+    }
 
 }

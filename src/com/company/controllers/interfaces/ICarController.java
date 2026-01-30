@@ -11,7 +11,8 @@ public interface ICarController {
 
     String getAllCars();
 
-    String buyCar(int carId);
+    // From there table purchases knows who buys the car(r)
+    String buyCar(int carId , int userId);
 
     String FilterCarsByASC();
 
@@ -24,5 +25,8 @@ public interface ICarController {
     String getAvailableBrands();
     String getAvailableCities();
     String getAvailableEngineTypes();
+
+    // Added Join(r)
+    String getFullCarDescription(int carId)
 
 }

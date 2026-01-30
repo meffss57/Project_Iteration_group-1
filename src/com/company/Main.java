@@ -13,12 +13,13 @@ import com.company.services.UserAuthService;
 
 public class Main {
     public static void main(String[] args) {
-        String url = System.getenv("DB_URL");
-        String user = System.getenv("DB_USER");
-        String password = System.getenv("DB_PASSWORD");
-        String dbName = System.getenv("DB_NAME");
+        IDB db = new PostgresDB(
+                "jdbc:postgresql://localhost:5432",
+                "postgres",
+                "0000",
+                "postgres"
+        );
 
-        IDB db = new PostgresDB(url, user, password, dbName);
 
         ICarRepository repo = new CarRepository(db);
         ICarController controller = new CarController(repo);
