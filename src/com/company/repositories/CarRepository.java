@@ -82,13 +82,13 @@ public class CarRepository implements ICarRepository {
     }
 
 
+    // updates status(r)
+    // writes buyers to the table purchase(r)
     @Override
-    public Car buyCar(int carId) {
-        String updateSql = "UPDATE cars SET status = 'sold' " +
-                "WHERE car_id = ? AND status <> 'sold'";
-
-        String selectSql = "SELECT car_id, vin, brand, model, branch_city, year, color, " +
-                "engine_type, engine_volume, mileage, sale_price, status " +
+    public Car buyCar(int carId, int userId) {
+        String updateSql = "UPDATE cars SET status = 'sold' WHERE car_id = ? AND status <> 'sold'";
+        String insertPurchaseSql = "INSERT INTO purchases(car_id, user_id) VALUES(?, ?)";
+        String selectSql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status " +
                 "FROM cars WHERE car_id = ?";
 
         try (Connection con = db.getConnection()) {
@@ -103,6 +103,12 @@ public class CarRepository implements ICarRepository {
             if (updated == 0) {
                 con.rollback();
                 return null;
+            }
+
+            try (PreparedStatement ins = con.prepareStatement(insertPurchaseSql)) {
+                ins.setInt(1, carId);
+                ins.setInt(2, userId);
+                ins.executeUpdate();
             }
 
             Car car;
@@ -126,7 +132,7 @@ public class CarRepository implements ICarRepository {
                             rs.getDouble("engine_volume"),
                             rs.getInt("mileage"),
                             rs.getDouble("sale_price"),
-                            rs.getString("status") // тут уже будет "sold"
+                            rs.getString("status")
                     );
                 }
             }
@@ -140,7 +146,6 @@ public class CarRepository implements ICarRepository {
 
         return null;
     }
-
     @Override
     public List<Car> getAllCars() {
         List<Car> cars = new ArrayList<>();
@@ -337,5 +342,51 @@ public class CarRepository implements ICarRepository {
     public List<String> getAvailableEngineTypes() {
         return fetchDistinct("SELECT DISTINCT engine_type FROM cars ORDER BY engine_type", "engine_type");
     }
+
+    // Join function(r)
+    @Override
+    public String getFullCarDescription(int carId) {
+        String sql =
+                "SELECT c.car_id, c.vin, c.brand, c.model, c.branch_city, c.year, c.color, " +
+                        "       c.engine_type, c.engine_volume, c.mileage, c.sale_price, c.status, " +
+                        "       u.username AS buyer_username, p.purchase_time " +
+                        "FROM cars c " +
+                        "LEFT JOIN purchases p ON p.car_id = c.car_id " +
+                        "LEFT JOIN users u ON u.user_id = p.user_id " +
+                        "WHERE c.car_id = ? " +
+                        "ORDER BY p.purchase_time DESC " +
+                        "LIMIT 1";
+
+        try (Connection con = db.getConnection();
+             PreparedStatement st = con.prepareStatement(sql)) {
+
+            st.setInt(1, carId);
+
+            try (ResultSet rs = st.executeQuery()) {
+                if (!rs.next()) return "Car was not found!";
+
+                Timestamp ts = rs.getTimestamp("purchase_time");
+
+                return "=== FULL CAR DESCRIPTION ===" +
+                        "\nCar ID: " + rs.getInt("car_id") +
+                        "\nVIN: " + rs.getString("vin") +
+                        "\nBrand: " + rs.getString("brand") +
+                        "\nModel: " + rs.getString("model") +
+                        "\nBranch city: " + rs.getString("branch_city") +
+                        "\nYear: " + rs.getInt("year") +
+                        "\nColor: " + rs.getString("color") +
+                        "\nEngine: " + rs.getString("engine_type") + " " + rs.getDouble("engine_volume") +
+                        "\nMileage: " + rs.getInt("mileage") +
+                        "\nPrice: " + rs.getDouble("sale_price") +
+                        "\nStatus: " + rs.getString("status") +
+                        "\nBuyer: " + (rs.getString("buyer_username") == null ? "-" : rs.getString("buyer_username")) +
+                        "\nPurchase time: " + (ts == null ? "-" : ts.toString());
+            }
+
+        } catch (SQLException e) {
+            return "SQL error: " + e.getMessage();
+        }
+    }
+
 
 }

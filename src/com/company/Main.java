@@ -13,12 +13,13 @@ import com.company.services.UserAuthService;
 
 public class Main {
     public static void main(String[] args) {
-        String url = System.getenv("DB_URL");
-        String user = System.getenv("DB_USER");
-        String password = System.getenv("DB_PASSWORD");
-        String dbName = System.getenv("DB_NAME");
+        IDB db = new PostgresDB(
+                "jdbc:postgresql://localhost:5432",
+                "postgres",
+                "0000",
+                "postgres"
+        );
 
-        IDB db = new PostgresDB(url, user, password, dbName);
 
         ICarRepository repo = new CarRepository(db);
         ICarController controller = new CarController(repo);
@@ -37,5 +38,16 @@ public class Main {
         app.start();
 
         db.close();
+
+        // S = every part of the code is responsible to its tasks
+        // O = Open/Closed means that you add to the code a new code . You are not rewriting all code
+        // L = part of the code can be substituted by another part
+        // I = class does his personal tasks not others
+        // D = we can change methods not changing main logic!
+        // Added Join with id
+        // Added lambda methods
+        // Changed boolean type to integer in login method
+        // added purchases table to PgAdmin
+        // understood SOLID
     }
 }

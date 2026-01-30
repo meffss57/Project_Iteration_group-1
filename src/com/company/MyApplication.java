@@ -4,6 +4,8 @@ import com.company.controllers.interfaces.ICarController;
 import com.company.view.CarPrinter;
 import com.company.services.AdminAuthService;
 import com.company.services.UserAuthService;
+import java.util.Map;
+
 
 import com.company.Role;
 
@@ -19,6 +21,9 @@ public class MyApplication {
 
 
     private Role currentRole = Role.USER;
+
+    // available logined users
+    private Integer currentUserId = null;
 
     public MyApplication(ICarController controller, AdminAuthService authService, UserAuthService userAuthService) {
         this.controller = controller;
@@ -50,6 +55,7 @@ public class MyApplication {
         System.out.println("2. Get car by ID");
         System.out.println("3. Buy car by ID");
         System.out.println("4. Filter cars");
+        System.out.println("5. Full car description (JOIN)");
         System.out.println("0. Back");
         System.out.print("Choose option: ");
     }
@@ -82,6 +88,7 @@ public class MyApplication {
         }
     }
 
+    // returns integer not boolean(r)
     private boolean handleUserAuth() {
         while (true) {
             userAuthMenu();
@@ -95,8 +102,10 @@ public class MyApplication {
                     System.out.print("Password: ");
                     String p = scanner.nextLine();
 
-                    if (userAuthService.login(u, p)) {
-                        System.out.println("Login successful");
+                    Integer id = userAuthService.login(u, p);
+                    if (id != null) {
+                        currentUserId = id;
+                        System.out.println("Login successful (user_id=" + currentUserId + ")");
                         return true;
                     } else {
                         System.out.println("Wrong username or password");
@@ -123,25 +132,25 @@ public class MyApplication {
         }
     }
 
-
+    //method reference(lambda)(r)
     private void runUserMenu() {
+            Map<Integer, Runnable> actions = Map.of(
+                1, this::getAllCarsMenu,
+                2, this::getCarByIdMenu,
+                3, this::buyCarByIdMenu,
+                4, this::FilterCars,
+                5, this::fullCarDescriptionMenu
+        );
+
         while (true) {
             userMenu();
             int option = scanner.nextInt();
 
-            switch (option) {
-                case 1 -> getAllCarsMenu();
-                case 2 -> getCarByIdMenu();
-                case 3 -> buyCarByIdMenu();
-                case 4 -> FilterCars();
-                case 0 -> {
-                    return;
-                }
-                default -> System.out.println("Invalid option");
-            }
+            if (option == 0) return;
+
+            actions.getOrDefault(option, () -> System.out.println("Invalid option")).run();
         }
     }
-
 
     private void handleAdminOption(int option) {
         switch (option) {
@@ -155,10 +164,6 @@ public class MyApplication {
             default -> System.out.println("Invalid option");
         }
     }
-
-
-
-
 
     public void start() {
         while (true) {
@@ -193,8 +198,6 @@ public class MyApplication {
         }
     }
 
-
-
     private void getAllCarsMenu() {
         System.out.println("\n=================================");
         System.out.println("LIST OF ALL CARS");
@@ -215,10 +218,15 @@ public class MyApplication {
     }
 
     private void buyCarByIdMenu() {
+        if (currentUserId == null) {
+            System.out.println("You must login first.");
+            return;
+        }
+
         System.out.print("\nEnter car ID: ");
         int id = scanner.nextInt();
 
-        String response = controller.buyCar(id);
+        String response = controller.buyCar(id, currentUserId);
         if ("Car has been sold or is archived!".equals(response)) {
             System.out.println("Car has been sold or is archived!");
         } else {
@@ -227,6 +235,12 @@ public class MyApplication {
         }
     }
 
+    // added join
+    private void fullCarDescriptionMenu() {
+        System.out.print("\nEnter car ID: ");
+        int id = scanner.nextInt();
+        System.out.println(controller.getFullCarDescription(id));
+    }
 
     private void FilterCars() {
         System.out.println("\n=================================");

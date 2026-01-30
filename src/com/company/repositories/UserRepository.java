@@ -14,18 +14,26 @@ public class UserRepository {
         this.db = db;
     }
 
-    public boolean login(String username, String password) {
-        String sql = "SELECT id FROM users WHERE username = ? AND password = ?";
+    // returns success if user login exits , else null (r)
+    public Integer login(String username, String password) {
+        String sql = "SELECT user_id FROM users WHERE username = ? AND password = ?";
+
         try (Connection con = db.getConnection();
              PreparedStatement st = con.prepareStatement(sql)) {
 
             st.setString(1, username);
             st.setString(2, password);
-            return st.executeQuery().next();
+
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("user_id");
+            }
+
         } catch (Exception e) {
             System.out.println("User login error: " + e.getMessage());
         }
-        return false;
+
+        return null;
     }
 
     public boolean register(String username, String password) {

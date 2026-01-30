@@ -9,7 +9,7 @@ public interface ICarRepository {
 
     Car getCar(int id);
 
-    Car buyCar(int id);
+    Car buyCar(int carId , int userId);
 
     List<Car> getAllCars();
 
@@ -30,4 +30,7 @@ public interface ICarRepository {
     List<String> getAvailableCities();
 
     List<String> getAvailableEngineTypes();
+
+    // Join function
+    String getFullCarDescription(int carId);
 }
