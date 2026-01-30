@@ -27,6 +27,6 @@ public interface ICarController {
     String getAvailableEngineTypes();
 
     // Added Join(r)
-    String getFullCarDescription(int carId)
+    String getFullCarDescription(int carId);
 
 }

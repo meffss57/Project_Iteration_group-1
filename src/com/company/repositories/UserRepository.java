@@ -14,6 +14,7 @@ public class UserRepository {
         this.db = db;
     }
 
+    // returns success if user login exits , else null (r)
     public Integer login(String username, String password) {
         String sql = "SELECT user_id FROM users WHERE username = ? AND password = ?";
 
@@ -27,12 +28,13 @@ public class UserRepository {
             if (rs.next()) {
                 return rs.getInt("user_id");
             }
+
         } catch (Exception e) {
             System.out.println("User login error: " + e.getMessage());
         }
+
         return null;
     }
-
 
     public boolean register(String username, String password) {
         String sql = "INSERT INTO users(username, password) VALUES (?, ?)";
