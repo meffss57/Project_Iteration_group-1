@@ -10,26 +10,37 @@ import com.company.repositories.UserRepository;
 import com.company.repositories.interfaces.ICarRepository;
 import com.company.services.AdminAuthService;
 import com.company.services.UserAuthService;
+import com.company.factory.AppFactory;
 
 public class Main {
     public static void main(String[] args) {
-        IDB db = new PostgresDB(
-                "jdbc:postgresql://localhost:5432",
-                "postgres",
-                "0000",
-                "postgres"
-        );
+        String url = System.getenv("DB_URL");
+        String user = System.getenv("DB_USER");
+        String password = System.getenv("DB_PASSWORD");
+        String dbName = System.getenv("DB_NAME");
 
+        IDB db = PostgresDB.getInstance(url, user, password, dbName);
 
-        ICarRepository repo = new CarRepository(db);
-        ICarController controller = new CarController(repo);
+// Repositories
+        ICarRepository repo =
+                AppFactory.createCarRepository(db);
 
-        AdminRepository adminRepo = new AdminRepository(db);
-        AdminAuthService authService = new AdminAuthService(adminRepo);
+        AdminRepository adminRepo =
+                AppFactory.createAdminRepository(db);
 
+        UserRepository userRepo =
+                AppFactory.createUserRepository(db);
 
-        UserRepository userRepo = new UserRepository(db);
-        UserAuthService userAuthService = new UserAuthService(userRepo);
+// Services
+        AdminAuthService authService =
+                AppFactory.createAdminService(adminRepo);
+
+        UserAuthService userAuthService =
+                AppFactory.createUserService(userRepo);
+
+// Controller
+        ICarController controller =
+                AppFactory.createCarController(repo);
 
         MyApplication app =
                 new MyApplication(controller, authService, userAuthService);
