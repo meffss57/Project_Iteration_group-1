@@ -1,12 +1,13 @@
 package com.company.repositories;
 
 import com.company.data.interfaces.IDB;
+import com.company.repositories.interfaces.IUserRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class UserRepository {
+public class UserRepository implements IUserRepository {
 
     private final IDB db;
 
