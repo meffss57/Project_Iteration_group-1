@@ -3,6 +3,7 @@ package com.company.controllers;
 import com.company.models.Car;
 import com.company.controllers.interfaces.ICarController;
 import com.company.repositories.interfaces.ICarRepository;
+import com.company.validation.CarValidator;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,13 +16,35 @@ public class CarController implements ICarController{
         this.repo = repo;
     }
 
-    public String createCar(String vin, String brand, String model, String branchCity, int year, String color,String engineType, double engineVolume, int mileage, double salePrice, String status) {
+    public String createCar(String vin,
+                            String brand,
+                            String model,
+                            String branchCity,
+                            int year,
+                            String color,
+                            String engineType,
+                            double engineVolume,
+                            int mileage,
+                            double salePrice,
+                            String status) {
+        try{
+            CarValidator.validateCreateCar(
+                    vin, brand, model, branchCity, year,
+                    color, engineType, engineVolume, mileage,
+                    salePrice, status
+            );
+        } catch (IllegalArgumentException e){
+            return "Validation error:" + e.getMessage();
+        }
 
-        Car car = new Car( vin,  brand,  model,  branchCity,  year, color, engineType,  engineVolume,  mileage,  salePrice,  status);
+        Car car = new Car(
+                vin, brand, model, branchCity, year,
+                color, engineType, engineVolume, mileage,
+                salePrice, status
+        );
 
         boolean created = repo.createCar(car);
-
-        return (created ? "Car was created!" : "Car creation was failed!");
+        return created ? "Car was created!" : "Car creation was failed!";
     }
 
     // Appilication of lambda(r)
