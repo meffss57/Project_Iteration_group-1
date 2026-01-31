@@ -1,12 +1,13 @@
 package com.company.repositories;
 
 import com.company.data.interfaces.IDB;
+import com.company.repositories.interfaces.IAdminRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class AdminRepository {
+public class AdminRepository implements IAdminRepository {
 
     private final IDB db;
 
@@ -14,6 +15,7 @@ public class AdminRepository {
         this.db = db;
     }
 
+    @Override
     public boolean authenticate(String username, String password) {
         String sql = "SELECT id FROM admins WHERE username = ? AND password = ?";
 
