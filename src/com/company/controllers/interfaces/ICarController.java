@@ -33,4 +33,7 @@ public interface ICarController {
 
     String getAvailableCategories();
 
+    // from sold -> available
+    String markCarAsAvailable(int carId);
+
 }
