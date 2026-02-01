@@ -11,6 +11,9 @@ import com.company.repositories.interfaces.ICarRepository;
 import com.company.services.AdminAuthService;
 import com.company.services.UserAuthService;
 import com.company.factory.AppFactory;
+import com.company.factory.AppFactory;
+import com.company.services.ManagerAuthService;
+import com.company.repositories.ManagerRepository;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,7 +22,7 @@ public class Main {
         String password = System.getenv("DB_PASSWORD");
         String dbName = System.getenv("DB_NAME");
 
-        IDB db = PostgresDB.getInstance(url, user, password, dbName);
+        IDB db = PostgresDB.getInstance(url, user, password, dbName);  //singleton
 
 // Repositories
         ICarRepository repo =
@@ -31,6 +34,9 @@ public class Main {
         UserRepository userRepo =
                 AppFactory.createUserRepository(db);
 
+        ManagerRepository managerRepo =
+                AppFactory.createManagerRepository(db);
+
 // Services
         AdminAuthService authService =
                 AppFactory.createAdminService(adminRepo);
@@ -38,12 +44,16 @@ public class Main {
         UserAuthService userAuthService =
                 AppFactory.createUserService(userRepo);
 
+        ManagerAuthService managerAuthService =
+                AppFactory.createManagerService(managerRepo);
+
+
 // Controller
         ICarController controller =
                 AppFactory.createCarController(repo);
 
         MyApplication app =
-                new MyApplication(controller, authService, userAuthService);
+                new MyApplication(controller, authService, userAuthService, managerAuthService);
 
 
         app.start();
@@ -63,5 +73,6 @@ public class Main {
         // added purchases table to PgAdmin
         // understood SOLID
         // made a function from sold -> available in admin menu
+
     }
 }

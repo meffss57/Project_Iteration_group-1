@@ -1,22 +1,22 @@
 package com.company.repositories;
 
 import com.company.data.interfaces.IDB;
-import com.company.repositories.interfaces.IAdminRepository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class AdminRepository implements IAdminRepository {
+public class ManagerRepository {
 
     private final IDB db;
 
-    public AdminRepository(IDB db) {
+    public ManagerRepository(IDB db) {
         this.db = db;
     }
 
-    @Override
     public boolean authenticate(String username, String password) {
-        String sql = "SELECT id FROM admins WHERE username = ? AND password = ?";
+
+        String sql =
+                "SELECT manager_id FROM managers WHERE username=? AND password=?";
 
         try (Connection con = db.getConnection();
              PreparedStatement st = con.prepareStatement(sql)) {
@@ -25,10 +25,11 @@ public class AdminRepository implements IAdminRepository {
             st.setString(2, password);
 
             ResultSet rs = st.executeQuery();
+
             return rs.next();
 
         } catch (Exception e) {
-            System.out.println("Admin auth error: " + e.getMessage());
+            System.out.println("Manager auth error: " + e.getMessage());
         }
 
         return false;

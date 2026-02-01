@@ -5,11 +5,14 @@ import com.company.controllers.interfaces.ICarController;
 import com.company.data.interfaces.IDB;
 import com.company.repositories.*;
 import com.company.repositories.interfaces.ICarRepository;
+import com.company.repositories.ManagerRepository;
+import com.company.services.ManagerAuthService;
 import com.company.services.*;
+
 
 public class AppFactory {
 
-    // ---------- Repositories ----------
+    //Repositories
 
     public static ICarRepository createCarRepository(IDB db) {
         return new CarRepository(db);
@@ -23,7 +26,11 @@ public class AppFactory {
         return new AdminRepository(db);
     }
 
-    // ---------- Services ----------
+    public static ManagerRepository createManagerRepository(IDB db) {
+        return new ManagerRepository(db);
+    }
+
+    //Services
 
     public static UserAuthService createUserService(UserRepository repo) {
         return new UserAuthService(repo);
@@ -33,7 +40,11 @@ public class AppFactory {
         return new AdminAuthService(repo);
     }
 
-    // ---------- Controllers ----------
+    public static ManagerAuthService createManagerService(ManagerRepository repo) {
+        return new ManagerAuthService(repo);
+    }
+
+    //Controllers
 
     public static ICarController createCarController(ICarRepository repo) {
         return new CarController(repo);

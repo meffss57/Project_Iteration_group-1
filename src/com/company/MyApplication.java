@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.controllers.interfaces.ICarController;
+import com.company.services.ManagerAuthService;
 import com.company.view.CarPrinter;
 import com.company.services.AdminAuthService;
 import com.company.services.UserAuthService;
@@ -18,6 +19,7 @@ public class MyApplication {
     private final ICarController controller;
     private final AdminAuthService authService;
     private final UserAuthService userAuthService;
+    private final ManagerAuthService managerAuthService;
 
 
     private Role currentRole = Role.USER;
@@ -25,10 +27,11 @@ public class MyApplication {
     // available logined users
     private Integer currentUserId = null;
 
-    public MyApplication(ICarController controller, AdminAuthService authService, UserAuthService userAuthService) {
+    public MyApplication(ICarController controller, AdminAuthService authService, UserAuthService userAuthService, ManagerAuthService managerAuthService) {
         this.controller = controller;
         this.authService = authService;
         this.userAuthService = userAuthService;
+        this.managerAuthService = managerAuthService;
     }
 
     private void startMenu() {
@@ -37,6 +40,7 @@ public class MyApplication {
         System.out.println("=================================");
         System.out.println("1. Continue as user");
         System.out.println("2. Login as admin");
+        System.out.println("3. Login as manager");
         System.out.println("0. Exit");
         System.out.print("Choose option: ");
     }
@@ -61,8 +65,6 @@ public class MyApplication {
     }
 
 
-
-
     private void adminMenu() {
         System.out.println("\nADMIN MENU");
         System.out.println("1. View all cars");
@@ -70,6 +72,16 @@ public class MyApplication {
         System.out.println("3. Create car");
         System.out.println("4. Mark SOLD car as available");
         System.out.println("0. Back");
+        System.out.print("Choose option: ");
+    }
+
+    private void managerMenu() {
+
+        System.out.println("\nMANAGER MENU");
+        System.out.println("1. View all cars");
+        System.out.println("2. Get car by ID");
+        System.out.println("3. Full car description");
+        System.out.println("0. Logout");
         System.out.print("Choose option: ");
     }
 
@@ -84,6 +96,22 @@ public class MyApplication {
         if (authService.login(username, password)) {
             currentRole = Role.ADMIN;
             System.out.println("Admin access granted");
+        } else {
+            System.out.println("Wrong login or password");
+        }
+    }
+
+    private void managerLogin() {
+
+        System.out.print("Manager login: ");
+        String u = scanner.next();
+
+        System.out.print("Password: ");
+        String p = scanner.next();
+
+        if (managerAuthService.login(u, p)) {
+            currentRole = Role.MANAGER;
+            System.out.println("Manager access granted");
         } else {
             System.out.println("Wrong login or password");
         }
@@ -140,7 +168,7 @@ public class MyApplication {
                 2, this::getCarByIdMenu,
                 3, this::buyCarByIdMenu,
                 4, this::FilterCars,
-                5, this::fullCarDescriptionMenu
+                5, this::secureFullDescription
         );
 
         while (true) {
@@ -157,7 +185,7 @@ public class MyApplication {
         switch (option) {
             case 1 -> getAllCarsMenu();
             case 2 -> getCarByIdMenu();
-            case 3 -> createCarMenu();
+            case 3 -> secureCreateCar();
             case 4 -> markSoldAsAvailableMenu();
             case 0 -> {
                 currentRole = Role.USER;
@@ -181,6 +209,7 @@ public class MyApplication {
                             }
                         }
                         case 2 -> adminLogin();
+                        case 3 -> managerLogin();
                         case 0 -> {
                             System.out.println("Goodbye!");
                             return;
@@ -188,9 +217,35 @@ public class MyApplication {
                         default -> System.out.println("Invalid option");
                     }
 
-                } else {
+                } else if (currentRole == Role.MANAGER) {
+
+                    managerMenu();
+
+                    int opt = scanner.nextInt();
+
+                    switch (opt) {
+
+                        case 1 -> getAllCarsMenu();
+
+                        case 2 -> getCarByIdMenu();
+
+                        case 3 -> secureFullDescription();
+
+                        case 0 -> {
+                            currentRole = Role.USER;
+                            System.out.println("Logged out");
+                        }
+
+                        default -> System.out.println("Invalid option");
+                    }
+
+                }
+                else if (currentRole == Role.ADMIN) {
+
                     adminMenu();
+
                     handleAdminOption(scanner.nextInt());
+
                 }
 
             } catch (InputMismatchException e) {
@@ -208,6 +263,10 @@ public class MyApplication {
     }
 
     private void getCarByIdMenu() {
+        if (currentRole != Role.USER) {
+            System.out.println("Only users can buy cars");
+            return;
+        }
         System.out.print("\nEnter car ID: ");
         int id = scanner.nextInt();
 
@@ -373,4 +432,28 @@ public class MyApplication {
                 engineVolume, mileage, salePrice, status, category
         ));
     }
+
+    private void secureFullDescription() {
+
+        if (currentRole == Role.USER ||
+                currentRole == Role.MANAGER ||
+                currentRole == Role.ADMIN) {
+
+            fullCarDescriptionMenu();
+            return;
+        }
+
+        System.out.println("Access denied");
+    }
+
+    private void secureCreateCar() {
+
+        if (currentRole != Role.ADMIN) {
+            System.out.println("Access denied: admin only");
+            return;
+        }
+
+        createCarMenu();
+    }
+
 }
