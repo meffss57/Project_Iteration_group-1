@@ -29,4 +29,8 @@ public interface ICarController {
     // Added Join(r)
     String getFullCarDescription(int carId);
 
+    // from sold to available(r)
+    String markCarAsAvailable(int carId);
+
+
 }

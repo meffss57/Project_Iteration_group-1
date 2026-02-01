@@ -136,4 +136,20 @@ public class CarController implements ICarController{
         return repo.getFullCarDescription(carId);
     }
 
+
+    @Override
+    public String markCarAsAvailable(int carId) {
+        Car car = repo.getCar(carId);
+        if (car == null) return "Car was not found!";
+
+        if (!"sold".equalsIgnoreCase(car.getStatus())) {
+            return "Car status is not 'sold' (current: " + car.getStatus() + ")";
+        }
+
+        boolean ok = repo.markCarAsAvailable(carId);
+        if (!ok) return "Cannot update status (maybe already changed)";
+
+        Car updated = repo.getCar(carId);
+        return (updated == null ? "Car was not found!" : updated.toString());
+    }
 }

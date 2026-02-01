@@ -387,5 +387,20 @@ public class CarRepository implements ICarRepository {
         }
     }
 
+    @Override
+    public boolean markCarAsAvailable(int carId) {
+        String sql = "UPDATE cars SET status = 'available' WHERE car_id = ? AND status = 'sold'";
+
+        try (Connection con = db.getConnection();
+             PreparedStatement st = con.prepareStatement(sql)) {
+
+            st.setInt(1, carId);
+            return st.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+            return false;
+        }
+    }
 
 }

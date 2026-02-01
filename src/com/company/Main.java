@@ -60,5 +60,6 @@ public class Main {
         // Changed boolean type to integer in login method
         // added purchases table to PgAdmin
         // understood SOLID
+        // made a function from sold -> available in admin menu
     }
 }
