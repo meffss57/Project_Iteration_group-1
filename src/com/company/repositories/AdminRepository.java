@@ -2,7 +2,6 @@ package com.company.repositories;
 
 import com.company.data.interfaces.IDB;
 import com.company.repositories.interfaces.IAdminRepository;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

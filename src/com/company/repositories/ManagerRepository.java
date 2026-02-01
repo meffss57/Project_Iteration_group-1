@@ -1,7 +1,6 @@
 package com.company.repositories;
 
 import com.company.data.interfaces.IDB;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

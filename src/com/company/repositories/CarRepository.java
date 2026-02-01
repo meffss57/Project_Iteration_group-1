@@ -1,5 +1,4 @@
 package com.company.repositories;
-
 import com.company.data.interfaces.IDB;
 import com.company.models.Car;
 import com.company.repositories.interfaces.ICarRepository;
@@ -299,6 +298,7 @@ public class CarRepository implements ICarRepository {
             return new ArrayList<>();
         }
     }
+
 
     @Override
     public List<Car> FilterCarsByASC() {

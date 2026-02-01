@@ -22,7 +22,7 @@ public class Main {
         String password = System.getenv("DB_PASSWORD");
         String dbName = System.getenv("DB_NAME");
 
-        IDB db = PostgresDB.getInstance(url, user, password, dbName);
+        IDB db = PostgresDB.getInstance(url, user, password, dbName);  //singleton
 
 // Repositories
         ICarRepository repo =
@@ -73,5 +73,6 @@ public class Main {
         // added purchases table to PgAdmin
         // understood SOLID
         // made a function from sold -> available in admin menu
+
     }
 }

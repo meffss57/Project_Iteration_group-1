@@ -1,5 +1,6 @@
 package com.company.services;
 
+
 import com.company.repositories.ManagerRepository;
 
 public class ManagerAuthService {

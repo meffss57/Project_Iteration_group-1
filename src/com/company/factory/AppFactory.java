@@ -9,6 +9,7 @@ import com.company.repositories.ManagerRepository;
 import com.company.services.ManagerAuthService;
 import com.company.services.*;
 
+
 public class AppFactory {
 
     //Repositories
