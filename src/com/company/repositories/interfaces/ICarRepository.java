@@ -36,4 +36,7 @@ public interface ICarRepository {
 
     // Join function
     String getFullCarDescription(int carId);
+
+    // sold -> available
+    boolean markCarAsAvailable(int carId);
 }

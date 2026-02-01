@@ -68,6 +68,7 @@ public class MyApplication {
         System.out.println("1. View all cars");
         System.out.println("2. Get car by ID");
         System.out.println("3. Create car");
+        System.out.println("4. Mark SOLD car as available");
         System.out.println("0. Back");
         System.out.print("Choose option: ");
     }
@@ -157,6 +158,7 @@ public class MyApplication {
             case 1 -> getAllCarsMenu();
             case 2 -> getCarByIdMenu();
             case 3 -> createCarMenu();
+            case 4 -> markSoldAsAvailableMenu();
             case 0 -> {
                 currentRole = Role.USER;
                 System.out.println("Logged out");
@@ -240,6 +242,21 @@ public class MyApplication {
         System.out.print("\nEnter car ID: ");
         int id = scanner.nextInt();
         System.out.println(controller.getFullCarDescription(id));
+    }
+
+    // from sold -> available
+    private void markSoldAsAvailableMenu() {
+        System.out.print("\nEnter car ID to set AVAILABLE: ");
+        int id = scanner.nextInt();
+
+        String response = controller.markCarAsAvailable(id);
+
+        if (response != null && response.startsWith("Car{")) {
+            System.out.println("Status updated successfully!");
+            CarPrinter.printCarCard(response);
+        } else {
+            System.out.println(response);
+        }
     }
 
     private void FilterCars() {
