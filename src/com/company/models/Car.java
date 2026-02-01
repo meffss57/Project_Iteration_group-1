@@ -14,11 +14,12 @@ public class Car {
     private int mileage;
     private double salePrice;
     private String status;
+    private String category;
 
     public Car() {}
 
     public Car(String vin, String brand, String model, String branchCity, int year, String color,
-               String engineType, double engineVolume, int mileage, double salePrice, String status) {
+               String engineType, double engineVolume, int mileage, double salePrice, String status, String category) {
         this.vin = vin;
         this.brand = brand;
         this.model = model;
@@ -30,10 +31,11 @@ public class Car {
         this.mileage = mileage;
         this.salePrice = salePrice;
         this.status = status;
+        this.category = category;
     }
 
-    public Car(int carId, String vin, String brand, String model, String branchCity, int year, String color, String engineType, double engineVolume, int mileage, double salePrice, String status) {
-        this(vin, brand, model, branchCity, year, color, engineType, engineVolume, mileage, salePrice, status);
+    public Car(int carId, String vin, String brand, String model, String branchCity, int year, String color, String engineType, double engineVolume, int mileage, double salePrice, String status, String category) {
+        this(vin, brand, model, branchCity, year, color, engineType, engineVolume, mileage, salePrice, status, category);
         this.carId = carId;
     }
 
@@ -129,9 +131,13 @@ public class Car {
         return status;
     }
 
+    public String getCategory(){ return category; }
+
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public void setCategory(String category){ this.category = category; }
 
     @Override
     public String toString() {
@@ -148,6 +154,7 @@ public class Car {
                 ", mileage=" + mileage +
                 ", salePrice=" + salePrice +
                 ", status='" + status + '\'' +
+                ", category = '" + category  + '\'' +
                 '}';
     }
 

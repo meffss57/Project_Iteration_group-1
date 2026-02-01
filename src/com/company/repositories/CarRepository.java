@@ -17,8 +17,8 @@ public class CarRepository implements ICarRepository {
 
     @Override
     public boolean createCar(Car car) {
-        String sql = "INSERT INTO cars(vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO cars(vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status, category) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 
         try (Connection con = db.getConnection();
              PreparedStatement st = con.prepareStatement(sql)) {
@@ -34,6 +34,7 @@ public class CarRepository implements ICarRepository {
             st.setInt(9, car.getMileage());
             st.setDouble(10, car.getSalePrice());
             st.setString(11, car.getStatus());
+            st.setString(12,car.getCategory());
 
             return st.executeUpdate() > 0;
 
@@ -46,7 +47,7 @@ public class CarRepository implements ICarRepository {
 
     @Override
     public Car getCar(int carId) {
-        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status " +
+        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status, category " +
                 "FROM cars WHERE car_id=?";
 
         try (Connection con = db.getConnection();
@@ -68,9 +69,10 @@ public class CarRepository implements ICarRepository {
                             rs.getDouble("engine_volume"),
                             rs.getInt("mileage"),
                             rs.getDouble("sale_price"),
-                            rs.getString("status")
-                    );
-                }
+                            rs.getString("status"),
+                            rs.getString("category")
+                    )
+;                }
             }
 
         } catch (SQLException e) {
@@ -87,7 +89,7 @@ public class CarRepository implements ICarRepository {
     public Car buyCar(int carId, int userId) {
         String updateSql = "UPDATE cars SET status = 'sold' WHERE car_id = ? AND status <> 'sold'";
         String insertPurchaseSql = "INSERT INTO purchases(car_id, user_id) VALUES(?, ?)";
-        String selectSql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status " +
+        String selectSql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status, category " +
                 "FROM cars WHERE car_id = ?";
 
         try (Connection con = db.getConnection()) {
@@ -131,7 +133,8 @@ public class CarRepository implements ICarRepository {
                             rs.getDouble("engine_volume"),
                             rs.getInt("mileage"),
                             rs.getDouble("sale_price"),
-                            rs.getString("status")
+                            rs.getString("status"),
+                            rs.getString("category")
                     );
                 }
             }
@@ -148,7 +151,7 @@ public class CarRepository implements ICarRepository {
     @Override
     public List<Car> getAllCars() {
         List<Car> cars = new ArrayList<>();
-        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status FROM cars";
+        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status, category FROM cars";
 
         try (Connection con = db.getConnection();
              Statement st = con.createStatement();
@@ -167,7 +170,8 @@ public class CarRepository implements ICarRepository {
                         rs.getDouble("engine_volume"),
                         rs.getInt("mileage"),
                         rs.getDouble("sale_price"),
-                        rs.getString("status")
+                        rs.getString("status"),
+                        rs.getString("category")
                 );
                 cars.add(car);
             }
@@ -195,7 +199,8 @@ public class CarRepository implements ICarRepository {
                     rs.getDouble("engine_volume"),
                     rs.getInt("mileage"),
                     rs.getDouble("sale_price"),
-                    rs.getString("status")
+                    rs.getString("status"),
+                    rs.getString("category")
             ));
         }
         return cars;
@@ -247,6 +252,21 @@ public class CarRepository implements ICarRepository {
     }
 
     @Override
+    public List<Car> filterByCategory(String category){
+        String sql = "SELECT * FROM cars WHERE LOWER(category) = LOWER(?)";
+        try (Connection con = db.getConnection()    ;
+             PreparedStatement st = con.prepareStatement(sql)) {
+            st.setString(1, category);
+            try(ResultSet rs = st.executeQuery()){
+                return mapCars(rs);
+            }
+        }catch (SQLException e){
+            System.out.println("SQL error: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
     public List<Car> filterByEngineType(String car_enginetype) {
         String sql = "SELECT * FROM cars WHERE LOWER(engine_type)=LOWER(?)";
         try (Connection con = db.getConnection();
@@ -283,7 +303,7 @@ public class CarRepository implements ICarRepository {
     @Override
     public List<Car> FilterCarsByASC() {
         List<Car> cars = new ArrayList<>();
-        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status FROM cars ORDER BY sale_price";
+        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status, category FROM cars ORDER BY sale_price";
 
         try (Connection con = db.getConnection();
              Statement st = con.createStatement();
@@ -302,7 +322,8 @@ public class CarRepository implements ICarRepository {
                         rs.getDouble("engine_volume"),
                         rs.getInt("mileage"),
                         rs.getDouble("sale_price"),
-                        rs.getString("status")
+                        rs.getString("status"),
+                        rs.getString("category")
                 );
                 cars.add(car);
             }
@@ -313,6 +334,7 @@ public class CarRepository implements ICarRepository {
 
         return cars;
     }
+
 
     private List<String> fetchDistinct(String sql, String col) {
         List<String> list = new ArrayList<>();
@@ -347,7 +369,7 @@ public class CarRepository implements ICarRepository {
     public String getFullCarDescription(int carId) {
         String sql =
                 "SELECT c.car_id, c.vin, c.brand, c.model, c.branch_city, c.year, c.color, " +
-                        "       c.engine_type, c.engine_volume, c.mileage, c.sale_price, c.status, " +
+                        "       c.engine_type, c.engine_volume, c.mileage, c.sale_price, c.status, с.category " +
                         "       u.username AS buyer_username, p.purchase_time " +
                         "FROM cars c " +
                         "LEFT JOIN purchases p ON p.car_id = c.car_id " +
@@ -378,6 +400,7 @@ public class CarRepository implements ICarRepository {
                         "\nMileage: " + rs.getInt("mileage") +
                         "\nPrice: " + rs.getDouble("sale_price") +
                         "\nStatus: " + rs.getString("status") +
+                        "\nCategory: " + rs.getString("category") +
                         "\nBuyer: " + (rs.getString("buyer_username") == null ? "-" : rs.getString("buyer_username")) +
                         "\nPurchase time: " + (ts == null ? "-" : ts.toString());
             }
@@ -385,6 +408,11 @@ public class CarRepository implements ICarRepository {
         } catch (SQLException e) {
             return "SQL error: " + e.getMessage();
         }
+    }
+
+    @Override
+    public List<String> getAvailableCategories(){
+        return fetchDistinct("SELECT DISTINCT category FROM cars ORDER BY category", "category");
     }
 
 

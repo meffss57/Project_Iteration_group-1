@@ -251,6 +251,7 @@ public class MyApplication {
         System.out.println("4.Filter by engine_type");
         System.out.println("5.Filter by price");
         System.out.println("6.Filter by ascending order");
+        System.out.println("7.Filter by categories");
         System.out.println("0.Back");
         System.out.println("=================================");
 
@@ -263,6 +264,7 @@ public class MyApplication {
             case 4 -> FilterbyEnginetype();
             case 5 -> FilterbyPrice();
             case 6 -> FilterCarsByASC();
+            case 7 -> FilterbyCategory();
             case 0 -> {}
             default -> System.out.println("Invalid option");
         }
@@ -311,6 +313,14 @@ public class MyApplication {
         CarPrinter.printAllCars(controller.FilterCarsByASC());
     }
 
+    private void FilterbyCategory(){
+        scanner.nextLine();
+        System.out.print("Available car categories:\n" + controller.getAvailableCategories());
+        System.out.print("\nEnter category:");
+        String category = scanner.nextLine();
+        CarPrinter.printAllCars(controller.filterByCategory(category));
+    }
+
 
     private void createCarMenu() {
         System.out.println("\nCREATE NEW CAR");
@@ -337,11 +347,13 @@ public class MyApplication {
         double salePrice = scanner.nextDouble();
         System.out.print("Status: ");
         String status = scanner.next();
+        System.out.print("Category: ");
+        String category = scanner.next();
 
         System.out.println(controller.createCar(
                 vin, brand, model, branchCity,
                 year, color, engineType,
-                engineVolume, mileage, salePrice, status
+                engineVolume, mileage, salePrice, status, category
         ));
     }
 }

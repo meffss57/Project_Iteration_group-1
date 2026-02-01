@@ -24,14 +24,16 @@ public class CarController implements ICarController{
                             String color,
                             String engineType,
                             double engineVolume,
-                            int mileage,
+                               int mileage,
                             double salePrice,
-                            String status) {
+                            String status,
+                            String category
+    ) {
         try{
             CarValidator.validateCreateCar(
                     vin, brand, model, branchCity, year,
                     color, engineType, engineVolume, mileage,
-                    salePrice, status
+                    salePrice, status, category
             );
         } catch (IllegalArgumentException e){
             return "Validation error:" + e.getMessage();
@@ -40,7 +42,7 @@ public class CarController implements ICarController{
         Car car = new Car(
                 vin, brand, model, branchCity, year,
                 color, engineType, engineVolume, mileage,
-                salePrice, status
+                salePrice, status, category
         );
 
         boolean created = repo.createCar(car);
@@ -78,6 +80,11 @@ public class CarController implements ICarController{
         return carsToString(repo.filterByPriceRange(car_price_low, car_price_high));
     }
 
+    @Override
+    public String filterByCategory(String category){
+        return carsToString(repo.filterByCategory(category));
+    }
+
     @Override public String getAvailableBrands(){
         return String.join("\n", repo.getAvailableBrands());
     }
@@ -90,6 +97,9 @@ public class CarController implements ICarController{
         return String.join("\n", repo.getAvailableEngineTypes());
     }
 
+    @Override public String getAvailableCategories(){
+        return String.join("\n", repo.getAvailableCategories());
+    }
 
     @Override
     public String getCar(int car_id) {
