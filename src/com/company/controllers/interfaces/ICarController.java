@@ -5,7 +5,7 @@ public interface ICarController {
     String createCar(String vin, String brand, String model, String branchCity,
                      int year, String color, String engineType,
                      double engineVolume, int mileage,
-                     double salePrice, String status);
+                     double salePrice, String status, String category);
 
     String getCar(int carId);
 
@@ -28,5 +28,9 @@ public interface ICarController {
 
     // Added Join(r)
     String getFullCarDescription(int carId);
+
+    String filterByCategory(String category);
+
+    String getAvailableCategories();
 
 }

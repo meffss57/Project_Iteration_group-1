@@ -13,7 +13,8 @@ public class CarValidator {
             double engineVolume,
             int mileage,
             double salePrice,
-            String status
+            String status,
+            String category
     ) {
 
         if(vin == null || vin.isBlank() || vin.length() != 17){
@@ -46,8 +47,11 @@ public class CarValidator {
         if(salePrice <= 0){
             throw new IllegalArgumentException("Sale price must be positive");
         }
-        if(status == null){
-            throw new IllegalArgumentException("Status cannot be empty");
+        if(status != "sold" || status != "archived" || status != "available"){
+            throw new IllegalArgumentException("Status must be 'sold' or 'archived' or 'available' ");
+        }
+        if(category != "Sedan" || category != "SUV" || category != "Hatchback" || category != "Electric"){
+            throw new IllegalArgumentException("Category must be 'SUV' or 'Sedan' or 'Hatchback' or 'Electric' ");
         }
     }
 }

@@ -31,6 +31,9 @@ public interface ICarRepository {
 
     List<String> getAvailableEngineTypes();
 
+    List<Car> filterByCategory(String category);
+    List<String> getAvailableCategories();
+
     // Join function
     String getFullCarDescription(int carId);
 }
