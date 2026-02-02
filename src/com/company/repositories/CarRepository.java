@@ -1,4 +1,5 @@
 package com.company.repositories;
+
 import com.company.data.interfaces.IDB;
 import com.company.models.Car;
 import com.company.repositories.interfaces.ICarRepository;
@@ -150,7 +151,7 @@ public class CarRepository implements ICarRepository {
     @Override
     public List<Car> getAllCars() {
         List<Car> cars = new ArrayList<>();
-        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status, category FROM cars ";
+        String sql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status, category FROM cars";
 
         try (Connection con = db.getConnection();
              Statement st = con.createStatement();
@@ -299,7 +300,6 @@ public class CarRepository implements ICarRepository {
         }
     }
 
-
     @Override
     public List<Car> FilterCarsByASC() {
         List<Car> cars = new ArrayList<>();
@@ -368,18 +368,15 @@ public class CarRepository implements ICarRepository {
     @Override
     public String getFullCarDescription(int carId) {
         String sql =
-                "SELECT " +
-                        "c.car_id, c.vin, c.brand, c.model, c.branch_city, c.year, c.color, " +
-                        "c.engine_type, c.engine_volume, c.mileage, c.sale_price, c.status, " +
-                        "c.category, " +
-                        "u.username AS buyer_username, p.purchase_time " +
+                "SELECT c.car_id, c.vin, c.brand, c.model, c.branch_city, c.year, c.color, " +
+                        "       c.engine_type, c.engine_volume, c.mileage, c.sale_price, c.status, c.category, " +
+                        "       u.username AS buyer_username, p.purchase_time " +
                         "FROM cars c " +
                         "LEFT JOIN purchases p ON p.car_id = c.car_id " +
                         "LEFT JOIN users u ON u.user_id = p.user_id " +
                         "WHERE c.car_id = ? " +
                         "ORDER BY p.purchase_time DESC " +
-                        "LIMIT 1 ";
-
+                        "LIMIT 1";
         try (Connection con = db.getConnection();
              PreparedStatement st = con.prepareStatement(sql)) {
 

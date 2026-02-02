@@ -67,8 +67,8 @@ public class Main {
         // D = we can change methods not changing main logic!
         // Added Join with id
         // Added lambda methods
-        // Added categories
-        // Added data validation
+        // Added categories(a)
+        // Added data validation(a)
         // Changed boolean type to integer in login method
         // added purchases table to PgAdmin
         // understood SOLID
