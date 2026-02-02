@@ -35,8 +35,8 @@ public class CarValidator {
         if(color == null){
             throw new IllegalArgumentException("Color cannot be empty");
         }
-        if(engineType == null){
-            throw new IllegalArgumentException("Engine type cannot be empty");
+        if(engineType != "petrol" || engineType != "diesel" || engineType != "electric"){
+            throw new IllegalArgumentException("Engine type must be either petrol or diesel or electric");
         }
         if(engineVolume <= 0 || engineVolume >= 10){
             throw new IllegalArgumentException("Engine volume must be positive");
