@@ -1,260 +1,194 @@
 package com.company;
 
 import com.company.controllers.interfaces.ICarController;
-import com.company.services.ManagerAuthService;
-import com.company.view.CarPrinter;
-import com.company.services.AdminAuthService;
+import com.company.models.AuthUser;
 import com.company.services.UserAuthService;
-import java.util.Map;
-
-
-import com.company.Role;
-
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import com.company.view.CarPrinter;
 
 public class MyApplication {
 
-    private final Scanner scanner = new Scanner(System.in);
+    private final java.util.Scanner scanner = new java.util.Scanner(System.in);
+
     private final ICarController controller;
-    private final AdminAuthService authService;
     private final UserAuthService userAuthService;
-    private final ManagerAuthService managerAuthService;
 
+    private AuthUser currentUser = null;
 
-    private Role currentRole = Role.USER;
-
-    // available logined users
-    private Integer currentUserId = null;
-
-    public MyApplication(ICarController controller, AdminAuthService authService, UserAuthService userAuthService, ManagerAuthService managerAuthService) {
+    public MyApplication(ICarController controller, UserAuthService userAuthService) {
         this.controller = controller;
-        this.authService = authService;
         this.userAuthService = userAuthService;
-        this.managerAuthService = managerAuthService;
     }
 
+    // ---------- Helpers ----------
+    private int readInt(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String s = scanner.nextLine().trim();
+            try {
+                return Integer.parseInt(s);
+            } catch (NumberFormatException e) {
+                System.out.println("Input must be a number");
+            }
+        }
+    }
+
+    private double readDouble(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String s = scanner.nextLine().trim().replace(",", ".");
+            try {
+                return Double.parseDouble(s);
+            } catch (NumberFormatException e) {
+                System.out.println("Input must be a number");
+            }
+        }
+    }
+
+    private String readLine(String prompt) {
+        System.out.print(prompt);
+        return scanner.nextLine().trim();
+    }
+
+    // ---------- Start menu ----------
     private void startMenu() {
         System.out.println("=================================");
         System.out.println("WELCOME TO KZ.WHEELS");
         System.out.println("=================================");
-        System.out.println("1. Continue as user");
-        System.out.println("2. Login as admin");
-        System.out.println("3. Login as manager");
+        System.out.println("1. Sign in");
+        System.out.println("2. Sign up");
         System.out.println("0. Exit");
-        System.out.print("Choose option: ");
-    }
-    private void userAuthMenu() {
-        System.out.println("\nUSER ACCESS");
-        System.out.println("1. Login to existing account");
-        System.out.println("2. Create new account");
-        System.out.println("0. Back");
-        System.out.print("Choose option: ");
     }
 
-
-    private void userMenu() {
-        System.out.println("\nWELCOME DEAR CUSTOMER");
-        System.out.println("1. View all cars");
-        System.out.println("2. Get car by ID");
-        System.out.println("3. Buy car by ID");
-        System.out.println("4. Filter cars");
-        System.out.println("5. Full car description (JOIN)");
-        System.out.println("0. Back");
-        System.out.print("Choose option: ");
-    }
-
-
-    private void adminMenu() {
-        System.out.println("\nADMIN MENU");
-        System.out.println("1. View all cars");
-        System.out.println("2. Get car by ID");
-        System.out.println("3. Create car");
-        System.out.println("4. Mark SOLD car as available");
-        System.out.println("0. Back");
-        System.out.print("Choose option: ");
-    }
-
-    private void managerMenu() {
-
-        System.out.println("\nMANAGER MENU");
-        System.out.println("1. View all cars");
-        System.out.println("2. Get car by ID");
-        System.out.println("3. Full car description");
-        System.out.println("0. Logout");
-        System.out.print("Choose option: ");
-    }
-
-
-    private void adminLogin() {
-        System.out.print("Enter admin login: ");
-        String username = scanner.next();
-
-        System.out.print("Enter admin password: ");
-        String password = scanner.next();
-
-        if (authService.login(username, password)) {
-            currentRole = Role.ADMIN;
-            System.out.println("Admin access granted");
-        } else {
-            System.out.println("Wrong login or password");
-        }
-    }
-
-    private void managerLogin() {
-
-        System.out.print("Manager login: ");
-        String u = scanner.next();
-
-        System.out.print("Password: ");
-        String p = scanner.next();
-
-        if (managerAuthService.login(u, p)) {
-            currentRole = Role.MANAGER;
-            System.out.println("Manager access granted");
-        } else {
-            System.out.println("Wrong login or password");
-        }
-    }
-
-    // returns integer not boolean(r)
-    private boolean handleUserAuth() {
+    public void start() {
         while (true) {
-            userAuthMenu();
-            int option = scanner.nextInt();
-            scanner.nextLine();
+            if (currentUser == null) {
+                startMenu();
+                int choice = readInt("Choose option: ");
 
+                if (choice == 0) {
+                    System.out.println("Goodbye!");
+                    return;
+                } else if (choice == 1) {
+                    signIn();
+                } else if (choice == 2) {
+                    signUp();
+                } else {
+                    System.out.println("Invalid option");
+                }
+            } else {
+                runRoleMenu();
+            }
+        }
+    }
+
+    private void signIn() {
+        String u = readLine("Username: ");
+        String p = readLine("Password: ");
+
+        AuthUser user = userAuthService.login(u, p);
+        if (user == null) {
+            System.out.println("Wrong username or password");
+            return;
+        }
+
+        currentUser = user;
+        System.out.println("You are welcome, " + currentUser.getRole() + " " + currentUser.getUsername() + "!");
+    }
+
+    private void signUp() {
+        String u = readLine("Choose username: ");
+        String p = readLine("Choose password: ");
+
+        boolean ok = userAuthService.register(u, p);
+        if (ok) {
+            System.out.println("Account created. Now Sign in.");
+        } else {
+            System.out.println("Cannot create account");
+        }
+    }
+
+    private void logout() {
+        currentUser = null;
+        System.out.println("Logged out");
+    }
+
+    private void runRoleMenu() {
+        switch (currentUser.getRole()) {
+            case USER -> runUserMenu();
+            case ADMIN -> runAdminMenu();
+            case MANAGER -> runManagerMenu();
+        }
+    }
+
+    // ---------- USER ----------
+    private void runUserMenu() {
+        while (currentUser != null && currentUser.getRole() == Role.USER) {
+            System.out.println("\nWELCOME DEAR CUSTOMER");
+            System.out.println("1. View all cars");
+            System.out.println("2. Get car by ID");
+            System.out.println("3. Buy car by ID");
+            System.out.println("4. Filter cars");
+            System.out.println("5. Full car description (JOIN)");
+            System.out.println("0. Logout");
+
+            int option = readInt("Choose option: ");
             switch (option) {
-                case 1 -> {
-                    System.out.print("Username: ");
-                    String u = scanner.nextLine();
-                    System.out.print("Password: ");
-                    String p = scanner.nextLine();
-
-                    Integer id = userAuthService.login(u, p);
-                    if (id != null) {
-                        currentUserId = id;
-                        System.out.println("Login successful (user_id=" + currentUserId + ")");
-                        return true;
-                    } else {
-                        System.out.println("Wrong username or password");
-                    }
-                }
-                case 2 -> {
-                    System.out.print("Choose username: ");
-                    String u = scanner.nextLine();
-                    System.out.print("Choose password: ");
-                    String p = scanner.nextLine();
-
-                    if (userAuthService.register(u, p)) {
-                        System.out.println("Account created");
-                        return true;
-                    } else {
-                        System.out.println("Cannot create account");
-                    }
-                }
-                case 0 -> {
-                    return false;
-                }
+                case 1 -> getAllCarsMenu();
+                case 2 -> getCarByIdMenu();
+                case 3 -> buyCarByIdMenu();
+                case 4 -> filterCarsMenu();
+                case 5 -> fullCarDescriptionMenu();
+                case 0 -> logout();
                 default -> System.out.println("Invalid option");
             }
         }
     }
 
-    //method reference(lambda)(r)
-    private void runUserMenu() {
-            Map<Integer, Runnable> actions = Map.of(
-                1, this::getAllCarsMenu,
-                2, this::getCarByIdMenu,
-                3, this::buyCarByIdMenu,
-                4, this::FilterCars,
-                5, this::secureFullDescription
-        );
+    // ---------- ADMIN ----------
+    private void runAdminMenu() {
+        while (currentUser != null && currentUser.getRole() == Role.ADMIN) {
+            System.out.println("\nADMIN MENU");
+            System.out.println("1. View all cars");
+            System.out.println("2. Get car by ID");
+            System.out.println("3. Create car");
+            System.out.println("4. Mark SOLD car as available");
+            System.out.println("5. Full car description (JOIN)");
+            System.out.println("0. Logout");
 
-        while (true) {
-            userMenu();
-            int option = scanner.nextInt();
-
-            if (option == 0) return;
-
-            actions.getOrDefault(option, () -> System.out.println("Invalid option")).run();
-        }
-    }
-
-    private void handleAdminOption(int option) {
-        switch (option) {
-            case 1 -> getAllCarsMenu();
-            case 2 -> getCarByIdMenu();
-            case 3 -> secureCreateCar();
-            case 4 -> markSoldAsAvailableMenu();
-            case 0 -> {
-                currentRole = Role.USER;
-                System.out.println("Logged out");
-            }
-            default -> System.out.println("Invalid option");
-        }
-    }
-
-    public void start() {
-        while (true) {
-            try {
-                if (currentRole == Role.USER) {
-                    startMenu();
-                    int choice = scanner.nextInt();
-
-                    switch (choice) {
-                        case 1 -> {
-                            if (handleUserAuth()) {
-                                runUserMenu();
-                            }
-                        }
-                        case 2 -> adminLogin();
-                        case 3 -> managerLogin();
-                        case 0 -> {
-                            System.out.println("Goodbye!");
-                            return;
-                        }
-                        default -> System.out.println("Invalid option");
-                    }
-
-                } else if (currentRole == Role.MANAGER) {
-
-                    managerMenu();
-
-                    int opt = scanner.nextInt();
-
-                    switch (opt) {
-
-                        case 1 -> getAllCarsMenu();
-
-                        case 2 -> getCarByIdMenu();
-
-                        case 3 -> secureFullDescription();
-
-                        case 0 -> {
-                            currentRole = Role.USER;
-                            System.out.println("Logged out");
-                        }
-
-                        default -> System.out.println("Invalid option");
-                    }
-
-                }
-                else if (currentRole == Role.ADMIN) {
-
-                    adminMenu();
-
-                    handleAdminOption(scanner.nextInt());
-
-                }
-
-            } catch (InputMismatchException e) {
-                System.out.println("Input must be a number");
-                scanner.nextLine();
+            int option = readInt("Choose option: ");
+            switch (option) {
+                case 1 -> getAllCarsMenu();
+                case 2 -> getCarByIdMenu();
+                case 3 -> createCarMenu();
+                case 4 -> markSoldAsAvailableMenu();
+                case 5 -> fullCarDescriptionMenu();
+                case 0 -> logout();
+                default -> System.out.println("Invalid option");
             }
         }
     }
 
+    // ---------- MANAGER ----------
+    private void runManagerMenu() {
+        while (currentUser != null && currentUser.getRole() == Role.MANAGER) {
+            System.out.println("\nMANAGER MENU");
+            System.out.println("1. View all cars");
+            System.out.println("2. Get car by ID");
+            System.out.println("3. Full car description (JOIN)");
+            System.out.println("0. Logout");
+
+            int option = readInt("Choose option: ");
+            switch (option) {
+                case 1 -> getAllCarsMenu();
+                case 2 -> getCarByIdMenu();
+                case 3 -> fullCarDescriptionMenu();
+                case 0 -> logout();
+                default -> System.out.println("Invalid option");
+            }
+        }
+    }
+
+    // ---------- Car menus ----------
     private void getAllCarsMenu() {
         System.out.println("\n=================================");
         System.out.println("LIST OF ALL CARS");
@@ -263,14 +197,9 @@ public class MyApplication {
     }
 
     private void getCarByIdMenu() {
-        if (currentRole != Role.USER) {
-            System.out.println("Only users can buy cars");
-            return;
-        }
-        System.out.print("\nEnter car ID: ");
-        int id = scanner.nextInt();
-
+        int id = readInt("Enter car ID: ");
         String response = controller.getCar(id);
+
         if ("Car was not found!".equals(response)) {
             System.out.println("Car was not found!");
         } else {
@@ -279,15 +208,9 @@ public class MyApplication {
     }
 
     private void buyCarByIdMenu() {
-        if (currentUserId == null) {
-            System.out.println("You must login first.");
-            return;
-        }
+        int id = readInt("Enter car ID: ");
+        String response = controller.buyCar(id, currentUser.getUserId());
 
-        System.out.print("\nEnter car ID: ");
-        int id = scanner.nextInt();
-
-        String response = controller.buyCar(id, currentUserId);
         if ("Car has been sold or is archived!".equals(response)) {
             System.out.println("Car has been sold or is archived!");
         } else {
@@ -296,18 +219,13 @@ public class MyApplication {
         }
     }
 
-    // added join
     private void fullCarDescriptionMenu() {
-        System.out.print("\nEnter car ID: ");
-        int id = scanner.nextInt();
+        int id = readInt("Enter car ID: ");
         System.out.println(controller.getFullCarDescription(id));
     }
 
-    // from sold -> available
     private void markSoldAsAvailableMenu() {
-        System.out.print("\nEnter car ID to set AVAILABLE: ");
-        int id = scanner.nextInt();
-
+        int id = readInt("Enter car ID to set AVAILABLE: ");
         String response = controller.markCarAsAvailable(id);
 
         if (response != null && response.startsWith("Car{")) {
@@ -318,113 +236,89 @@ public class MyApplication {
         }
     }
 
-    private void FilterCars() {
+    private void filterCarsMenu() {
         System.out.println("\n=================================");
         System.out.println("Choose How to filter: ");
-        System.out.println("1.Filter by Brand");
-        System.out.println("2.Filter by City");
-        System.out.println("3.Filter by year");
-        System.out.println("4.Filter by engine_type");
-        System.out.println("5.Filter by price");
-        System.out.println("6.Filter by ascending order");
-        System.out.println("7.Filter by categories");
-        System.out.println("0.Back");
+        System.out.println("1. Filter by Brand");
+        System.out.println("2. Filter by City");
+        System.out.println("3. Filter by year");
+        System.out.println("4. Filter by engine_type");
+        System.out.println("5. Filter by price");
+        System.out.println("6. Filter by ascending order");
+        System.out.println("7. Filter by category");
+        System.out.println("0. Back");
         System.out.println("=================================");
 
-        int choice = scanner.nextInt();
+        int choice = readInt("Choose option: ");
 
         switch (choice) {
-            case 1 -> FilterbyBrand();
-            case 2 -> FilterbyCity();
-            case 3 -> FilterbyYear();
-            case 4 -> FilterbyEnginetype();
-            case 5 -> FilterbyPrice();
-            case 6 -> FilterCarsByASC();
-            case 7 -> FilterbyCategory();
-            case 0 -> {}
+            case 1 -> filterByBrand();
+            case 2 -> filterByCity();
+            case 3 -> filterByYear();
+            case 4 -> filterByEngineType();
+            case 5 -> filterByPrice();
+            case 6 -> filterCarsByASC();
+            case 7 -> filterByCategory();
+            case 0 -> { }
             default -> System.out.println("Invalid option");
         }
     }
 
-    private void FilterbyBrand() {
-        scanner.nextLine();
+    private void filterByBrand() {
         System.out.println("Available brands:\n" + controller.getAvailableBrands());
-        System.out.print("Enter brand: ");
-        String brand = scanner.nextLine();
+        String brand = readLine("Enter brand: ");
         CarPrinter.printAllCars(controller.filterByBrand(brand));
     }
 
-    private void FilterbyYear() {
-        System.out.print("Enter year: ");
-        int year = scanner.nextInt();
-        CarPrinter.printAllCars(controller.filterByYear(year));
-    }
-
-    private void FilterbyEnginetype() {
-        scanner.nextLine();
-        System.out.println("Available engine types:\n" + controller.getAvailableEngineTypes());
-        System.out.print("Enter engine type: ");
-        String type = scanner.nextLine();
-        CarPrinter.printAllCars(controller.filterByEngineType(type));
-    }
-
-    private void FilterbyCity() {
-        scanner.nextLine();
+    private void filterByCity() {
         System.out.println("Available cities:\n" + controller.getAvailableCities());
-        System.out.print("Enter city: ");
-        String city = scanner.nextLine();
+        String city = readLine("Enter city: ");
         CarPrinter.printAllCars(controller.filterByCity(city));
     }
 
-    private void FilterbyPrice() {
-        System.out.print("Enter low price: ");
-        double low = scanner.nextDouble();
-        System.out.print("Enter high price: ");
-        double high = scanner.nextDouble();
+    private void filterByYear() {
+        int year = readInt("Enter year: ");
+        CarPrinter.printAllCars(controller.filterByYear(year));
+    }
+
+    private void filterByEngineType() {
+        System.out.println("Available engine types:\n" + controller.getAvailableEngineTypes());
+        String type = readLine("Enter engine type: ");
+        CarPrinter.printAllCars(controller.filterByEngineType(type));
+    }
+
+    private void filterByPrice() {
+        double low = readDouble("Enter low price: ");
+        double high = readDouble("Enter high price: ");
         if (low > high) { double t = low; low = high; high = t; }
         CarPrinter.printAllCars(controller.filterByPriceRange(low, high));
     }
 
-    private void FilterCarsByASC() {
+    private void filterCarsByASC() {
         CarPrinter.printAllCars(controller.FilterCarsByASC());
     }
 
-    private void FilterbyCategory(){
-        scanner.nextLine();
-        System.out.print("Available car categories:\n" + controller.getAvailableCategories());
-        System.out.print("\nEnter category:");
-        String category = scanner.nextLine();
+    private void filterByCategory() {
+        System.out.println("Available categories:\n" + controller.getAvailableCategories());
+        String category = readLine("Enter category: ");
         CarPrinter.printAllCars(controller.filterByCategory(category));
     }
-
 
     private void createCarMenu() {
         System.out.println("\nCREATE NEW CAR");
 
-        System.out.print("VIN: ");
-        String vin = scanner.next();
-        System.out.print("Brand: ");
-        String brand = scanner.next();
-        System.out.print("Model: ");
-        String model = scanner.next();
-        System.out.print("Branch city: ");
-        String branchCity = scanner.next();
-        System.out.print("Year: ");
-        int year = scanner.nextInt();
-        System.out.print("Color: ");
-        String color = scanner.next();
-        System.out.print("Engine type: ");
-        String engineType = scanner.next();
-        System.out.print("Engine volume: ");
-        double engineVolume = scanner.nextDouble();
-        System.out.print("Mileage: ");
-        int mileage = scanner.nextInt();
-        System.out.print("Sale price: ");
-        double salePrice = scanner.nextDouble();
-        System.out.print("Status: ");
-        String status = scanner.next();
-        System.out.print("Category: ");
-        String category = scanner.next();
+        String vin = readLine("VIN: ");
+        String brand = readLine("Brand: ");
+        String model = readLine("Model: ");
+        String branchCity = readLine("Branch city: ");
+        int year = readInt("Year: ");
+        String color = readLine("Color: ");
+        String engineType = readLine("Engine type: ");
+        double engineVolume = readDouble("Engine volume: ");
+        int mileage = readInt("Mileage: ");
+        double salePrice = readDouble("Sale price: ");
+        String status = readLine("Status (available/sold/archived): ");
+        String category = readLine("Category (SUV/Sedan/Hatchback/Electric): ");
 
         System.out.println(controller.createCar(
                 vin, brand, model, branchCity,
@@ -432,28 +326,4 @@ public class MyApplication {
                 engineVolume, mileage, salePrice, status, category
         ));
     }
-
-    private void secureFullDescription() {
-
-        if (currentRole == Role.USER ||
-                currentRole == Role.MANAGER ||
-                currentRole == Role.ADMIN) {
-
-            fullCarDescriptionMenu();
-            return;
-        }
-
-        System.out.println("Access denied");
-    }
-
-    private void secureCreateCar() {
-
-        if (currentRole != Role.ADMIN) {
-            System.out.println("Access denied: admin only");
-            return;
-        }
-
-        createCarMenu();
-    }
-
 }

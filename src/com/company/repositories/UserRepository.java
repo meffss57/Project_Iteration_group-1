@@ -1,7 +1,10 @@
 package com.company.repositories;
 
+import com.company.Role;
 import com.company.data.interfaces.IDB;
+import com.company.models.AuthUser;
 import com.company.repositories.interfaces.IUserRepository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,9 +17,9 @@ public class UserRepository implements IUserRepository {
         this.db = db;
     }
 
-    // returns success if user login exits , else null (r)
-    public Integer login(String username, String password) {
-        String sql = "SELECT user_id FROM users WHERE username = ? AND password = ?";
+    @Override
+    public AuthUser login(String username, String password) {
+        String sql = "SELECT user_id, username, role FROM users WHERE username = ? AND password = ?";
 
         try (Connection con = db.getConnection();
              PreparedStatement st = con.prepareStatement(sql)) {
@@ -24,9 +27,15 @@ public class UserRepository implements IUserRepository {
             st.setString(1, username);
             st.setString(2, password);
 
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("user_id");
+            try (ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("user_id");
+                    String u = rs.getString("username");
+                    String roleStr = rs.getString("role");
+
+                    Role role = Role.valueOf(roleStr.toUpperCase()); // USER/ADMIN/MANAGER
+                    return new AuthUser(id, u, role);
+                }
             }
 
         } catch (Exception e) {
@@ -36,14 +45,17 @@ public class UserRepository implements IUserRepository {
         return null;
     }
 
+    @Override
     public boolean register(String username, String password) {
-        String sql = "INSERT INTO users(username, password) VALUES (?, ?)";
+        String sql = "INSERT INTO users(username, password, role) VALUES (?, ?, 'USER')";
+
         try (Connection con = db.getConnection();
              PreparedStatement st = con.prepareStatement(sql)) {
 
             st.setString(1, username);
             st.setString(2, password);
             return st.executeUpdate() > 0;
+
         } catch (Exception e) {
             System.out.println("User register error: " + e.getMessage());
         }
