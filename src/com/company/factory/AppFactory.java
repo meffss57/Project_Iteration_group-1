@@ -3,48 +3,25 @@ package com.company.factory;
 import com.company.controllers.CarController;
 import com.company.controllers.interfaces.ICarController;
 import com.company.data.interfaces.IDB;
-import com.company.repositories.*;
+import com.company.repositories.CarRepository;
+import com.company.repositories.UserRepository;
 import com.company.repositories.interfaces.ICarRepository;
-import com.company.repositories.ManagerRepository;
-import com.company.services.ManagerAuthService;
-import com.company.services.*;
-
+import com.company.repositories.interfaces.IUserRepository;
+import com.company.services.UserAuthService;
 
 public class AppFactory {
-
-    //Repositories
 
     public static ICarRepository createCarRepository(IDB db) {
         return new CarRepository(db);
     }
 
-    public static UserRepository createUserRepository(IDB db) {
+    public static IUserRepository createUserRepository(IDB db) {
         return new UserRepository(db);
     }
 
-    public static AdminRepository createAdminRepository(IDB db) {
-        return new AdminRepository(db);
-    }
-
-    public static ManagerRepository createManagerRepository(IDB db) {
-        return new ManagerRepository(db);
-    }
-
-    //Services
-
-    public static UserAuthService createUserService(UserRepository repo) {
+    public static UserAuthService createUserService(IUserRepository repo) {
         return new UserAuthService(repo);
     }
-
-    public static AdminAuthService createAdminService(AdminRepository repo) {
-        return new AdminAuthService(repo);
-    }
-
-    public static ManagerAuthService createManagerService(ManagerRepository repo) {
-        return new ManagerAuthService(repo);
-    }
-
-    //Controllers
 
     public static ICarController createCarController(ICarRepository repo) {
         return new CarController(repo);

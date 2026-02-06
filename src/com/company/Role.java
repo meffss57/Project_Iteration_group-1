@@ -1,8 +1,7 @@
-        package com.company;
+package com.company;
 
-
-        public enum Role {
-            USER,
-            ADMIN,
-            MANAGER
-        }
+public enum Role {
+    USER,
+    ADMIN,
+    MANAGER
+}

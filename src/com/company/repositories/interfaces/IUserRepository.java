@@ -1,7 +1,8 @@
 package com.company.repositories.interfaces;
 
-public interface IUserRepository {
-    Integer login(String name, String password);
+import com.company.models.AuthUser;
 
+public interface IUserRepository {
+    AuthUser login(String name, String password);
     boolean register(String name, String password);
 }

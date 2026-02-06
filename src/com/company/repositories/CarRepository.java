@@ -87,7 +87,7 @@ public class CarRepository implements ICarRepository {
     // writes buyers to the table purchase(r)
     @Override
     public Car buyCar(int carId, int userId) {
-        String updateSql = "UPDATE cars SET status = 'sold' WHERE car_id = ? AND status <> 'sold'";
+        String updateSql = "UPDATE cars SET status =  'sold' WHERE car_id = ? AND status <> 'sold'";
         String insertPurchaseSql = "INSERT INTO purchases(car_id, user_id) VALUES(?, ?)";
         String selectSql = "SELECT car_id, vin, brand, model, branch_city, year, color, engine_type, engine_volume, mileage, sale_price, status, category " +
                 "FROM cars WHERE car_id = ?";
