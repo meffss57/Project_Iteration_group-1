@@ -4,6 +4,10 @@ import com.company.controllers.interfaces.ICarController;
 import com.company.models.AuthUser;
 import com.company.services.UserAuthService;
 import com.company.view.CarPrinter;
+import com.company.services.ChatBotService;
+import com.company.view.ChatPrinter;
+
+
 
 public class MyApplication {
 
@@ -12,14 +16,20 @@ public class MyApplication {
     private final ICarController controller;
     private final UserAuthService userAuthService;
 
+    private final ChatBotService chatBot;
+
+
     private AuthUser currentUser = null;
 
-    public MyApplication(ICarController controller, UserAuthService userAuthService) {
+    public MyApplication(ICarController controller,
+                         UserAuthService userAuthService,
+                         ChatBotService chatBot) {
+        this.chatBot = chatBot;
         this.controller = controller;
         this.userAuthService = userAuthService;
     }
 
-    // ---------- Helpers ----------
+    // Helpers
     private int readInt(String prompt) {
         while (true) {
             System.out.print(prompt);
@@ -49,7 +59,7 @@ public class MyApplication {
         return scanner.nextLine().trim();
     }
 
-    // ---------- Start menu ----------
+    //  Start menu
     private void startMenu() {
         System.out.println("=================================");
         System.out.println("WELCOME TO KZ.WHEELS");
@@ -120,7 +130,7 @@ public class MyApplication {
         }
     }
 
-    // ---------- USER ----------
+    //USER
     private void runUserMenu() {
         while (currentUser != null && currentUser.getRole() == Role.USER) {
             System.out.println("\nWELCOME DEAR CUSTOMER");
@@ -129,7 +139,9 @@ public class MyApplication {
             System.out.println("3. Buy car by ID");
             System.out.println("4. Filter cars");
             System.out.println("5. Full car description (JOIN)");
+            System.out.println("6. Chat with Wheely");
             System.out.println("0. Logout");
+
 
             int option = readInt("Choose option: ");
             switch (option) {
@@ -138,13 +150,33 @@ public class MyApplication {
                 case 3 -> buyCarByIdMenu();
                 case 4 -> filterCarsMenu();
                 case 5 -> fullCarDescriptionMenu();
+                case 6 -> chatMenu();
                 case 0 -> logout();
                 default -> System.out.println("Invalid option");
             }
         }
     }
+    private void chatMenu() {
 
-    // ---------- ADMIN ----------
+        System.out.println("\n=== AI CAR ADVISOR WHEELY ===");
+        System.out.println("Type 'exit' to leave chat\n");
+
+        while (true) {
+
+            String q = readLine("You: ");
+
+            if (q.equalsIgnoreCase("exit")) break;
+
+            System.out.println("Thinking...\n");
+
+            String answer = chatBot.ask(q);
+
+            ChatPrinter.printAIAnswer(answer);
+
+        }
+    }
+
+    // ADMIN
     private void runAdminMenu() {
         while (currentUser != null && currentUser.getRole() == Role.ADMIN) {
             System.out.println("\nADMIN MENU");
@@ -168,7 +200,7 @@ public class MyApplication {
         }
     }
 
-    // ---------- MANAGER ----------
+    //MANAGER
     private void runManagerMenu() {
         while (currentUser != null && currentUser.getRole() == Role.MANAGER) {
             System.out.println("\nMANAGER MENU");
@@ -188,7 +220,7 @@ public class MyApplication {
         }
     }
 
-    // ---------- Car menus ----------
+    // Car menus
     private void getAllCarsMenu() {
         System.out.println("\n=================================");
         System.out.println("LIST OF ALL CARS");
