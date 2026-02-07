@@ -35,7 +35,9 @@ public class CarValidator {
         if (color == null || color.isBlank()) {
             throw new IllegalArgumentException("Color cannot be empty");
         }
-        if(engineType != "petrol" || engineType != "diesel" || engineType != "electric"){
+        if (!(engineType.equalsIgnoreCase("petrol")
+                || engineType.equalsIgnoreCase("diesel")
+                || engineType.equalsIgnoreCase("electric"))) {
             throw new IllegalArgumentException("Engine type must be either petrol or diesel or electric");
         }
         if (engineVolume <= 0 || engineVolume >= 10) {
