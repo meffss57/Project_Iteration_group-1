@@ -12,6 +12,8 @@ public class ChatBotService {
 
     private final ICarRepository carRepo;
     private final String apiKey;
+    private final StringBuilder chatHistory = new StringBuilder();
+
 
     public ChatBotService(ICarRepository carRepo) {
 
@@ -32,44 +34,67 @@ public class ChatBotService {
 
         String context = buildContext(cars);
 
-        String prompt = buildPrompt(context, question);
+        // Сохраняем вопрос
+        chatHistory.append("User: ")
+                .append(question)
+                .append("\n");
 
-        return callAPI(prompt);
+        String prompt = buildPrompt(context, chatHistory.toString());
+
+        String answer = callAPI(prompt);
+
+        // Сохраняем ответ
+        chatHistory.append("AI: ")
+                .append(answer)
+                .append("\n");
+
+        return answer;
     }
 
 
-    private String buildPrompt(String context, String question) {
+    private String buildPrompt(String context, String history) {
 
         return
                 "You are a professional car advisor.\n\n" +
 
-                        "BEHAVIOR RULES:\n" +
-                        "1. Always recommend a car first.\n" +
-                        "2. Use database internally.\n" +
-                        "3. Never show database.\n" +
-                        "4. Always include car ID.\n" +
-                        "5. Use only database cars.\n" +
-                        "6. If information is missing, make reasonable assumptions.\n" +
-                        "7. You may ask at most ONE short question AFTER recommendation.\n" +
-                        "8. Do NOT delay recommendation.\n\n" +
+                        "STRICT RULES:\n" +
+                        "1. ALWAYS use the format below.\n" +
+                        "2. NEVER write car attributes in one line.\n" +
+                        "3. EACH attribute must be on its own bullet line.\n" +
+                        "4. Use only database cars.\n" +
+                        "5. Always include ID.\n" +
+                        "6. Remember previous conversation.\n" +
+                        "7. Ask at most ONE short clarification question if needed.\n" +
+                        "8. After clarification, give final answer without questions.\n\n" +
 
-                        "OUTPUT FORMAT:\n" +
+                        "MANDATORY FORMAT:\n" +
                         "Recommended car:\n" +
-                        "• Name (ID: number)\n" +
-                        "• Price\n" +
-                        "• Year\n" +
-                        "• Mileage\n" +
-                        "• Engine\n" +
-                        "• Category\n" +
+                        "- Name (ID: number)\n" +
+                        "- Price\n" +
+                        "- Year\n" +
+                        "- Mileage\n" +
+                        "- Engine\n" +
+                        "- Category\n" +
                         "Reasons:\n" +
-                        "• reason 1\n" +
-                        "• reason 2\n" +
-                        "Optional question (one short line)\n\n" +
+                        "- reason 1\n" +
+                        "- reason 2\n" +
+        "Optional question: one short line\n\n" +
 
                         "DATABASE (PRIVATE):\n" +
                         context +
-                        "\nUser: " + question;
+
+                        "\n\nCHAT HISTORY:\n" +
+                        history +
+
+                        "\nRespond using ONLY the mandatory format.";
     }
+
+
+    public void resetHistory() {
+        chatHistory.setLength(0);
+    }
+
+
 
 
 

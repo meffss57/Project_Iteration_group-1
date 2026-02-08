@@ -158,7 +158,10 @@ public class MyApplication {
     }
 
 
+
     private void chatMenu() {
+        chatBot.resetHistory();
+
 
         System.out.println("\n=== AI CAR ADVISOR WHEELY ===");
         System.out.println("Type 'exit' to leave chat\n");

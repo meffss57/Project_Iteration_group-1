@@ -26,41 +26,31 @@ public class ChatPrinter {
 
             line = line.trim();
 
-            if (line.startsWith("**") || line.startsWith("##")) {
-                System.out.println(line.replace("*", ""));
+            if (line.isEmpty()) {
+                System.out.println();
+                continue;
             }
 
-            else if (line.startsWith("-") || line.startsWith("*")) {
+            // Header
+            if (line.toLowerCase().startsWith("recommended")) {
+                System.out.println("  " + line);
+                continue;
+            }
+
+            if (line.toLowerCase().startsWith("reasons")) {
+                System.out.println("\n  " + line);
+                continue;
+            }
+
+            // Bullet point
+            if (line.startsWith("•") || line.startsWith("-")) {
                 System.out.println(" • " + line.substring(1).trim());
+                continue;
             }
 
-            else if (line.contains("recommend") || line.contains("Recommended")) {
-                System.out.println(line);
-            }
-
-            else if (line.toLowerCase().contains("price")) {
-                System.out.println(line);
-            }
-
-            else if (line.toLowerCase().contains("mileage")) {
-                System.out.println(line);
-            }
-
-            else if (line.toLowerCase().contains("engine")) {
-                System.out.println(line);
-            }
-
-            else if (line.toLowerCase().contains("year")) {
-                System.out.println(line);
-            }
-
-            else if (line.toLowerCase().contains("category")) {
-                System.out.println(line);
-            }
-
-            else {
-                System.out.println("   " + line);
-            }
+            // Normal text
+            System.out.println("   " + line);
         }
     }
+
 }
