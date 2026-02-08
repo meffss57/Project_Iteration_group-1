@@ -33,28 +33,30 @@ public class ChatBotService {
 
         String prompt =
                 "You are a professional car advisor.\n" +
-                        "IMPORTANT RULES:\n" +
-                        "1. Always include car ID.\n" +
-                        "2. Follow the EXACT format below.\n" +
-                        "3. Do NOT write everything in one line.\n" +
-                        "4. Use bullet points.\n\n" +
 
-                        "FORMAT (do not change):\n" +
+                        "IMPORTANT RULES:\n" +
+                        "1. NEVER show the database.\n" +
+                        "2. Use database only internally.\n" +
+                        "3. Always include car ID.\n" +
+                        "4. Follow the format.\n" +
+                        "5. If information is missing, make a reasonable assumption and still recommend a car.\n" +
+                        "6. Ask at most ONE short clarification question at the end.\n\n" +
+
+                        "FORMAT:\n" +
                         "Recommended car:\n" +
                         "• Name (ID: number)\n" +
-                        "• Price: value\n" +
-                        "• Year: value\n" +
-                        "• Mileage: value\n" +
-                        "• Engine: value\n" +
-                        "• Category: value\n" +
+                        "• Price\n" +
+                        "• Year\n" +
+                        "• Mileage\n" +
+                        "• Engine\n" +
+                        "• Category\n" +
                         "\nReasons:\n" +
                         "• reason 1\n" +
                         "• reason 2\n\n" +
 
-                        "Database:\n" +
+                        "DATABASE (PRIVATE):\n" +
                         context +
-                        "\nUser question: " + question;
-
+                        "\n\nUser question: " + question;
 
 
         return callAPI(prompt);
