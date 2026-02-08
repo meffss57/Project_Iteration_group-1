@@ -156,6 +156,8 @@ public class MyApplication {
             }
         }
     }
+
+
     private void chatMenu() {
 
         System.out.println("\n=== AI CAR ADVISOR WHEELY ===");
@@ -175,6 +177,8 @@ public class MyApplication {
 
         }
     }
+
+
 
     // ADMIN
     private void runAdminMenu() {

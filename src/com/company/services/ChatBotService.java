@@ -15,6 +15,7 @@ public class ChatBotService {
 
     public ChatBotService(ICarRepository carRepo) {
 
+
         this.carRepo = carRepo;
 
         this.apiKey = System.getenv("GROQ_API_KEY");
@@ -31,18 +32,28 @@ public class ChatBotService {
 
         String context = buildContext(cars);
 
-        String prompt =
-                "You are a professional car advisor.\n" +
+        String prompt = buildPrompt(context, question);
 
-                        "IMPORTANT RULES:\n" +
-                        "1. NEVER show the database.\n" +
-                        "2. Use database only internally.\n" +
-                        "3. Always include car ID.\n" +
-                        "4. Follow the format.\n" +
-                        "5. If information is missing, make a reasonable assumption and still recommend a car.\n" +
-                        "6. Ask at most ONE short clarification question at the end.\n\n" +
+        return callAPI(prompt);
+    }
 
-                        "FORMAT:\n" +
+
+    private String buildPrompt(String context, String question) {
+
+        return
+                "You are a professional car advisor.\n\n" +
+
+                        "BEHAVIOR RULES:\n" +
+                        "1. Always recommend a car first.\n" +
+                        "2. Use database internally.\n" +
+                        "3. Never show database.\n" +
+                        "4. Always include car ID.\n" +
+                        "5. Use only database cars.\n" +
+                        "6. If information is missing, make reasonable assumptions.\n" +
+                        "7. You may ask at most ONE short question AFTER recommendation.\n" +
+                        "8. Do NOT delay recommendation.\n\n" +
+
+                        "OUTPUT FORMAT:\n" +
                         "Recommended car:\n" +
                         "• Name (ID: number)\n" +
                         "• Price\n" +
@@ -50,17 +61,17 @@ public class ChatBotService {
                         "• Mileage\n" +
                         "• Engine\n" +
                         "• Category\n" +
-                        "\nReasons:\n" +
+                        "Reasons:\n" +
                         "• reason 1\n" +
-                        "• reason 2\n\n" +
+                        "• reason 2\n" +
+                        "Optional question (one short line)\n\n" +
 
                         "DATABASE (PRIVATE):\n" +
                         context +
-                        "\n\nUser question: " + question;
-
-
-        return callAPI(prompt);
+                        "\nUser: " + question;
     }
+
+
 
 
     // Собираем инфу о машинах
@@ -196,5 +207,6 @@ public class ChatBotService {
                 .replace("\t", " ")
                 .replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "");
     }
+
 
 }
