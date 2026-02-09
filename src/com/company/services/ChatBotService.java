@@ -12,7 +12,9 @@ public class ChatBotService {
 
     private final ICarRepository carRepo;
     private final String apiKey;
-    private final StringBuilder chatHistory = new StringBuilder();
+    private String lastUserMessage = "";
+    private String lastAIMessage = "";
+
 
 
     public ChatBotService(ICarRepository carRepo) {
@@ -31,68 +33,76 @@ public class ChatBotService {
     public String ask(String question) {
 
         List<Car> cars = carRepo.getAllCars();
-
         String context = buildContext(cars);
 
-        // Сохраняем вопрос
-        chatHistory.append("User: ")
-                .append(question)
-                .append("\n");
-
-        String prompt = buildPrompt(context, chatHistory.toString());
+        String prompt = buildPrompt(
+                context,
+                lastUserMessage,
+                lastAIMessage,
+                question
+        );
 
         String answer = callAPI(prompt);
 
-        // Сохраняем ответ
-        chatHistory.append("AI: ")
-                .append(answer)
-                .append("\n");
+        // Save last turn
+        lastUserMessage = question;
+        lastAIMessage = answer;
 
         return answer;
     }
 
 
-    private String buildPrompt(String context, String history) {
+
+    private String buildPrompt(String context,
+                               String lastUser,
+                               String lastAI,
+                               String currentUser) {
 
         return
                 "You are a professional car advisor.\n\n" +
 
                         "STRICT RULES:\n" +
-                        "1. ALWAYS use the format below.\n" +
-                        "2. NEVER write car attributes in one line.\n" +
-                        "3. EACH attribute must be on its own bullet line.\n" +
-                        "4. Use only database cars.\n" +
-                        "5. Always include ID.\n" +
-                        "6. Remember previous conversation.\n" +
-                        "7. Ask at most ONE short clarification question if needed.\n" +
-                        "8. After clarification, give final answer without questions.\n\n" +
+                        "1. Always follow the format.\n" +
+                        "2. Never write attributes in one line.\n" +
+                        "3. Use only database cars.\n" +
+                        "4. Always include real ID.\n" +
+                        "5. Never invent cars.\n" +
+                        "6. After answering clarification, give final answer.\n" +
+                        "7. Do NOT ask more questions after final answer.\n\n" +
+                        "8. If no real ID exists, do NOT recommend that car.\n"+
 
-                        "MANDATORY FORMAT:\n" +
+                        "FORMAT:\n" +
                         "Recommended car:\n" +
-                        "- Name (ID: number)\n" +
-                        "- Price\n" +
-                        "- Year\n" +
-                        "- Mileage\n" +
-                        "- Engine\n" +
-                        "- Category\n" +
+                        "• Name (ID: number)\n" +
+                        "• Price\n" +
+                        "• Year\n" +
+                        "• Mileage\n" +
+                        "• Engine\n" +
+                        "• Category\n" +
                         "Reasons:\n" +
-                        "- reason 1\n" +
-                        "- reason 2\n" +
-        "Optional question: one short line\n\n" +
+                        "• reason 1\n" +
+                        "• reason 2\n" +
+                        "Optional question (only once)\n\n" +
 
                         "DATABASE (PRIVATE):\n" +
                         context +
 
-                        "\n\nCHAT HISTORY:\n" +
-                        history +
+                        "\n\nPREVIOUS CONTEXT:\n" +
+                        "User: " + lastUser + "\n" +
+                        "AI: " + lastAI + "\n\n" +
 
-                        "\nRespond using ONLY the mandatory format.";
+                        "CURRENT USER MESSAGE:\n" +
+                        currentUser +
+
+                        "\n\nRespond ONLY in the specified format.";
     }
 
 
     public void resetHistory() {
-        chatHistory.setLength(0);
+        lastUserMessage = "";
+        lastAIMessage = "";
     }
+
 
 
 
